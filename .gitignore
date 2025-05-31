@@ -1,0 +1,37 @@
+
+# === Python ===
+__pycache__/
+*.py[cod]
+*.sqlite3
+*.log
+*.pot
+*.pyc
+*.pyo
+*.pyd
+.Python
+db.sqlite3
+
+# === Django ===
+media/
+staticfiles/
+.env
+*.env
+
+# === Virtual Environment ===
+venv/
+env/
+ENV/
+*.egg-info/
+pip-wheel-metadata/
+Lib/
+Scripts/
+pyvenv.cfg
+CACHEDIR.TAG
+
+# === VS Code ===
+.vscode/
+
+# === Node/React ===
+frontend/node_modules/
+frontend/dist/
+frontend/.vite/

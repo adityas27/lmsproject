@@ -1,0 +1,64 @@
+### Login
+POST http://127.0.0.1:8000/api/accounts/login/
+Content-Type: application/json
+
+{
+    "username": "janedoe",
+    "password": "StrongPass456!"
+}
+
+### USER DETAILS
+GET http://127.0.0.1:8000/api/accounts/me/
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzQ2MDQ5MTcyLCJpYXQiOjE3NDYwNDg4NzIsImp0aSI6IjNiNDg5OGU2YWM5ZTQ3NTRhZmU1MGFlYTZkNWFlYWJlIiwidXNlcl9pZCI6Mn0.tAMGqTaQTo-HRK7gD9y5lf9uwp8UakPmoWKFWImbUB0
+
+### USER DETAILS
+GET http://127.0.0.1:8000/api/accounts/me/
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzQ1OTQ4NDg2LCJpYXQiOjE3NDU5NDgxODYsImp0aSI6ImYyYThmNzI0NWMwMzRlNjg4YWUxNDgyZDcwYTgxM2Y0IiwidXNlcl9pZCI6Mn0.8jfh0DnUNtKGFpKxFI0EqYFrXYachetDLa5r8tkBk4Y
+
+### SIGN UP 
+POST http://127.0.0.1:8000/api/accounts/signup/
+Content-Type: application/json
+
+{
+  "username": "janedoe",
+  "password": "StrongPass456!",
+  "password2": "StrongPass456!",
+  "email": "janedoe@example.com",
+  "first_name": "Jane",
+  "last_name": "Doe"
+}
+
+### UPDATE USER PROFILE
+PUT http://127.0.0.1:8000/api/accounts/me/update/
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzQ2MDQ5MTcyLCJpYXQiOjE3NDYwNDg4NzIsImp0aSI6IjNiNDg5OGU2YWM5ZTQ3NTRhZmU1MGFlYTZkNWFlYWJlIiwidXNlcl9pZCI6Mn0.tAMGqTaQTo-HRK7gD9y5lf9uwp8UakPmoWKFWImbUB0
+
+
+{
+  "first_name": "Jane",
+  "last_name": "Doe",
+  "email": "janedoe_updated@example.com"
+}
+
+### CREATING A COURSE
+POST http://127.0.0.1:8000/api/courses/courses/
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzQ4NDQyOTc1LCJpYXQiOjE3NDg0NDI2NzUsImp0aSI6ImFiNDZjYjczNTBmYjQzNjY4YThjZGNmYjQ5OWU3YTcxIiwidXNlcl9pZCI6Mn0.U9BCC6_apKhTEHanAcmBdfiOL1LxVIhMtl5Ot9AthbY
+
+{
+  "name": "Django for Beginners",
+  "description": "Learn Django from scratch",
+  "price": 1499,
+  "launch_date": "2025-06-01",
+  "rating": 4,
+  "level": "beginner",
+  "category": "web-dev",
+  "subcategory": "web-dev-django",
+  "tags": [1, 2],
+  "duration":5
+}
+
+### RETRIEVING A COURSE
+GET http://127.0.0.1:8000/api/courses/courses
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzQ4MDY5ODE5LCJpYXQiOjE3NDgwNjk1MTksImp0aSI6IjRhZmM2NDYzMjliODQ2NTViYmUzMzc2NDRhYTNmNDRiIiwidXNlcl9pZCI6Mn0.z7Nj_ZDqNjxAYGTFVq2mEzxgDtoQibDgwb-KcFTIfTA
