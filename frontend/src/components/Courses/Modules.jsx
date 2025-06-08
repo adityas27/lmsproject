@@ -1,7 +1,8 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { Link } from 'react-router-dom';
+import { Pencil, PlusSquare } from 'lucide-react';
 
-const ModuleList = ({ modules }) => {
+const ModuleList = ({ modules, isAuthor = false }) => {
   const [expandedModuleSlug, setExpandedModuleSlug] = useState(null);
 
   const toggleModule = (slug) => {
@@ -17,7 +18,19 @@ const ModuleList = ({ modules }) => {
             onClick={() => toggleModule(module.slug)}
           >
             <span>{module.title}</span>
-            <span>{expandedModuleSlug === module.slug ? '▲' : '▼'}</span>
+            <div className="flex items-center space-x-2">
+              {isAuthor && (
+                <>
+                  <Link to={`/modules/${module.slug}/edit`} title="Edit Module">
+                    <Pencil className="w-5 h-5 text-blue-600 hover:text-blue-800" />
+                  </Link>
+                  <Link to={`/courses/${module.course}/modules/${module.slug}/add-content`} title="Add Content">
+                    <PlusSquare className="w-5 h-5 text-green-600 hover:text-green-800" />
+                  </Link>
+                </>
+              )}
+              <span>{expandedModuleSlug === module.slug ? '▲' : '▼'}</span>
+            </div>
           </div>
 
           {expandedModuleSlug === module.slug && (

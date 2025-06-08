@@ -39,7 +39,7 @@ const CourseListPage = () => {
               key={course.slug}
               className="p-4 bg-white rounded-2xl shadow hover:shadow-md transition border"
             >
-              <h2 className="text-xl font-semibold">{course.title}</h2>
+              <h2 className="text-xl font-semibold">{course.name}</h2>
               <p className="text-gray-600 mt-1">
                 {course.description?.slice(0, 100)}...
               </p>

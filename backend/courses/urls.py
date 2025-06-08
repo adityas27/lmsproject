@@ -13,4 +13,6 @@ urlpatterns = [
     path('contents/<int:pk>/', views.module_content_detail_view, name='content-detail'),
     # Enrollment
     path('courses/<slug:slug>/enroll/', views.enroll_student, name='enroll-student'),
+    # Content Progress
+    path('content-progress/complete/', views.mark_content_completed, name='mark-content-completed'),
 ]

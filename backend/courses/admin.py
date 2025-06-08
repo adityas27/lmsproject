@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Course, Tag, Category, SubCategory, Module, ModuleContent, Enrollment
+from .models import Course, Tag, Category, SubCategory, Module, ModuleContent, Enrollment, ContentProgress
 # Register your models here.
 admin.site.register(Course)
 admin.site.register(Tag)
@@ -8,3 +8,4 @@ admin.site.register(SubCategory)
 admin.site.register(ModuleContent)
 admin.site.register(Module)
 admin.site.register(Enrollment)
+admin.site.register(ContentProgress)

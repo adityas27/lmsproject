@@ -1,26 +1,27 @@
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import axios from 'axios';
+import { CheckCircleIcon } from '@heroicons/react/24/solid';
 
 const ModuleContentDetail = () => {
-  const { id } = useParams(); // content ID from route
+  const { id } = useParams();
   const [content, setContent] = useState(null);
   const [loading, setLoading] = useState(true);
-  
+  const [marking, setMarking] = useState(false);
+  const [error, setError] = useState('');
+
   useEffect(() => {
     const fetchContent = async () => {
-      
       try {
-        const res = await axios.get(`http://127.0.0.1:8000/api/courses/contents/${id}/`, 
-          {
-            headers: {
-              Authorization: `Bearer ${localStorage.getItem('access')}`,
-            },
-          }
-        );
+        const res = await axios.get(`http://127.0.0.1:8000/api/courses/contents/${id}/`, {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem('access')}`,
+          },
+        });
         setContent(res.data);
-      } catch (error) {
-        console.error('Error fetching module content:', error);
+        console.log(res.data);
+      } catch (err) {
+        setError('Failed to load content');
       } finally {
         setLoading(false);
       }
@@ -29,41 +30,72 @@ const ModuleContentDetail = () => {
     fetchContent();
   }, [id]);
 
-  if (loading) return <div>Loading...</div>;
-  if (!content) return <div>Content not found</div>;
+  const handleMarkComplete = async () => {
+    setMarking(true);
+    setError('');
+    try {
+      await axios.post(
+        `http://127.0.0.1:8000/api/courses/content-progress/complete/`,
+        { content_id: content.id,
+          course_id: content.course_id  
+         },
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem('access')}`,
+          },
+        }
+      );
+      setContent(prev => ({ ...prev, is_completed: true }));
+    } catch (err) {
+      setError('Error marking content as complete');
+    } finally {
+      setMarking(false);
+    }
+  };
+
+  if (loading) return <div className="p-6 text-center">Loading...</div>;
+  if (!content) return <div className="p-6 text-red-500">Content not found</div>;
 
   return (
-    <div className="max-w-3xl mx-auto p-6 bg-white rounded shadow">
-      <h2 className="text-2xl font-semibold mb-4">
-        {content.content_type.toUpperCase()} Content (ID: {content.id})
-      </h2>
+    <div className="max-w-3xl mx-auto p-6 bg-white rounded shadow space-y-6">
+      <div className="flex justify-between items-center">
+        <h2 className="text-2xl font-bold">{content.content_type.toUpperCase()} Content</h2>
+        {content.is_completed && (
+          <div className="flex items-center text-green-600 font-medium">
+            <CheckCircleIcon className="h-6 w-6 mr-1" />
+            Completed
+          </div>
+        )}
+      </div>
 
-      <p><strong>Duration:</strong> {content.duration} mins</p>
-      <p><strong>Order:</strong> {content.order}</p>
-      <p><strong>Required:</strong> {content.is_required ? 'Yes' : 'No'}</p>
+      <div className="text-gray-700 space-y-2">
+        <p><strong>Duration:</strong> {content.duration} mins</p>
+        <p><strong>Order:</strong> {content.order}</p>
+        <p><strong>Required:</strong> {content.is_required ? 'Yes' : 'No'}</p>
+      </div>
 
       {content.content_type === 'text' && (
-        <div className="mt-4">
-          <h4 className="font-bold mb-2">Text</h4>
+        <div className="bg-gray-100 p-4 rounded">
+          <h4 className="font-semibold mb-2">Text Content</h4>
           <p>{content.text}</p>
         </div>
       )}
 
       {content.content_type === 'video' && (
-        <div className="mt-4">
-          <h4 className="font-bold mb-2">Video</h4>
+        <div>
+          <h4 className="font-semibold mb-2">Video</h4>
           <iframe
             src={content.video_url}
             title="Video Content"
-            className="w-full h-64"
+            className="w-full h-64 rounded border"
             allowFullScreen
           />
         </div>
       )}
 
       {content.content_type === 'file' && content.file && (
-        <div className="mt-4">
-          <h4 className="font-bold mb-2">Download File</h4>
+        <div>
+          <h4 className="font-semibold mb-2">Download File</h4>
           <a
             href={content.file}
             className="text-blue-600 underline"
@@ -75,6 +107,18 @@ const ModuleContentDetail = () => {
           </a>
         </div>
       )}
+
+      {!content.is_completed && (
+        <button
+          onClick={handleMarkComplete}
+          disabled={marking}
+          className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 disabled:opacity-50"
+        >
+          {marking ? 'Marking...' : 'Mark as Complete'}
+        </button>
+      )}
+
+      {error && <p className="text-red-500 mt-2">{error}</p>}
     </div>
   );
 };

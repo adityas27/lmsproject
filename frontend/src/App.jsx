@@ -9,7 +9,10 @@ import EditProfile from './components/EditProfile';
 import CourseList from './components/Courses/CourseList';
 import CourseDetails from './components/Courses/CourseDetails';
 import ModuleContentDetail from './components/Courses/ModuleContent';
-
+import AddModuleForm from './components/Courses/AddModuleForm';
+import AddModuleContent from './components/Courses/AddModuleContent';
+import EditModule from './components/Courses/EditModule';
+import AddCourseForm from './components/Courses/AddCourse';
 function App() {
   return (
     <Router>
@@ -35,6 +38,10 @@ function App() {
             <ModuleContentDetail />
           </PrivateRoute>
           } />
+        <Route path="/courses/:slug/add-module" element={<AddModuleForm />} />
+        <Route path="/modules/:slug/edit" element={<EditModule />} />
+        <Route path="/courses/:courseSlug/modules/:moduleSlug/add-content" element={<AddModuleContent />} />
+        <Route path="/courses/add-new" element={<AddCourseForm />} />
 
       </Routes>
     </Router>
