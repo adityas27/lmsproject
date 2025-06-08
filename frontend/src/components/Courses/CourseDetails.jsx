@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import axios from 'axios';
 import ModulesList from './Modules';
+import ProgressBar from '../ProgressBar';
 const CourseDetailPage = () => {
   const { slug } = useParams();
   const [course, setCourse] = useState(null);
@@ -12,6 +13,7 @@ const CourseDetailPage = () => {
     description: '',
     price: '',
   });
+  const [progress, setProgress] = useState(null);
   const renderStars = (rating) => {
     const fullStars = '★'.repeat(rating);
     const emptyStars = '☆'.repeat(5 - rating);
@@ -30,6 +32,16 @@ const CourseDetailPage = () => {
         description: response.data.description,
         price: response.data.price,
       });
+      // Only fetch progress if student is enrolled
+      if (response.data.is_enrolled) {
+        const progressRes = await axios.get(`http://127.0.0.1:8000/api/courses/courses/${slug}/progress/`, {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem('access')}`,
+          },
+        });
+        setProgress(progressRes.data);
+        console.log(progressRes.data);
+      }
     } catch (error) {
       console.error('Error fetching course details:', error);
     } finally {
@@ -62,16 +74,12 @@ const CourseDetailPage = () => {
       <Link to="/courses" className="text-blue-600 hover:underline mb-4 inline-block">
         &larr; Back to Courses
       </Link> <br />
-      <div className="mt-6">
-        <h2 className="text-xl font-semibold mb-2">Progress</h2>
-        <div className="w-full bg-gray-200 rounded-full h-4 mb-4">
-          <div
-            className="bg-green-500 h-4 rounded-full"
-            style={{ width: `${course.progress_percent || 0}%` }}
-          ></div>
-        </div>
-        <p>{course.progress_percent || 0}% completed</p>
+      <div className="p-6 max-w-4xl mx-auto">
+        {course.is_enrolled && (
+          <ProgressBar data={progress}/>
+        )}
       </div>
+
 
       {course.is_author && (
         <button

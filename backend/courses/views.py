@@ -211,4 +211,18 @@ def mark_content_completed(request):
     return Response({'success': True})
 
 
+# views.py
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def course_progress(request, course_id):
+    try:
+        course = Course.objects.get(slug=course_id)
+    except Course.DoesNotExist:
+        return Response({"detail": "Course not found."}, status=status.HTTP_404_NOT_FOUND)
 
+    total_contents = ModuleContent.objects.filter(module__course=course).count()
+    completed = ContentProgress.objects.filter(student=request.user, course=course, is_completed=True).count()
+    is_enrolled = Enrollment.objects.filter(student=request.user, course=course).exists()
+    progress = int((completed / total_contents) * 100) if total_contents > 0 else 0
+
+    return Response({"progress": progress, "is_enrolled":is_enrolled}, status=status.HTTP_200_OK)
