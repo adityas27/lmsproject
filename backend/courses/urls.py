@@ -17,5 +17,7 @@ urlpatterns = [
     path('content-progress/complete/', views.mark_content_completed, name='mark-content-completed'),
     # Course Progress
     path('courses/<slug:course_id>/progress/', views.course_progress, name='course-progress'),
+    # User Dashboard
+    path('dashboard/', views.user_dashboard_view, name='user-dashboard'),
 
 ]

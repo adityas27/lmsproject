@@ -5,8 +5,8 @@ from rest_framework import status, permissions
 from .models import Course
 from .serializers import CourseSerializer
 from django.shortcuts import get_object_or_404
-from .models import Module, ModuleContent, Enrollment, ContentProgress
-from .serializers import ModuleSerializer, ModuleContentSerializer, ContentProgressSerializer
+from .models import Module, ModuleContent, Enrollment, ContentProgress, Certificate
+from .serializers import ModuleSerializer, ModuleContentSerializer, ContentProgressSerializer, CertificateSerializer, DashboardSerializer
 from django.utils.timezone import now
 from django.utils import timezone
 
@@ -226,3 +226,13 @@ def course_progress(request, course_id):
     progress = int((completed / total_contents) * 100) if total_contents > 0 else 0
 
     return Response({"progress": progress, "is_enrolled":is_enrolled}, status=status.HTTP_200_OK)
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def user_dashboard_view(request):
+    user = request.user
+    user_certificates = Certificate.objects.filter(student=user)
+    serializer = DashboardSerializer(user, context={'request': request})
+    data = serializer.data
+    data['certificates'] = CertificateSerializer(user_certificates, many=True).data
+    return Response(data)

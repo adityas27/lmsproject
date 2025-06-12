@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Course, Module, ModuleContent, Enrollment, ContentProgress
+from .models import Course, Module, ModuleContent, Enrollment, ContentProgress, Certificate
 from accounts.serializers import AuthorSerializer
 
 class ModuleContentSerializer(serializers.ModelSerializer):
@@ -83,4 +83,44 @@ class ContentProgressSerializer(serializers.ModelSerializer):
         fields = ['id', 'student', 'content', 'course', 'is_completed', 'completed_at']
         read_only_fields = ['student', 'completed_at']
 
+
+class CourseProgressSerializer(serializers.ModelSerializer):
+    progress = serializers.SerializerMethodField()
+
+    class Meta:
+        model = Course
+        fields = ['slug', 'name', 'thumbnail', 'progress']
+
+    def get_progress(self, obj):
+        user = self.context['request'].user
+        completed = ContentProgress.objects.filter(course=obj, student=user, is_completed=True).count()
+        total = ModuleContent.objects.filter(module__course=obj).count()
+        return round((completed / total) * 100) if total else 0
+
+class CertificateSerializer(serializers.ModelSerializer):
+    course_title = serializers.CharField(source='course.title')
+
+    class Meta:
+        model = Certificate
+        fields = ['id', 'course_title', 'issued_on', 'certificate_url']
+
+class DashboardSerializer(serializers.Serializer):
+    full_name = serializers.CharField(source='get_full_name')
+    username = serializers.CharField()
+    email = serializers.EmailField()
+    bio = serializers.CharField(source='profile.bio', default='')
+    enrolled_courses = CourseProgressSerializer(source='courses_enrolled', many=True)
+    completed_courses = serializers.SerializerMethodField()
+    certificates = CertificateSerializer(many=True)
     
+    def get_completed_courses(self, obj):
+        completed = []
+        for course in obj.courses_enrolled.all():
+            total = ModuleContent.objects.filter(module__course=course).count()
+            completed_count = ContentProgress.objects.filter(course=course, student=obj, is_completed=True).count()
+            if total > 0 and total == completed_count:
+                completed.append({
+                    'name': course.name,
+                    'slug': course.slug,
+                })
+        return completed

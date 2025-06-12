@@ -143,4 +143,13 @@ class ContentProgress(models.Model):
         unique_together = ('student', 'content')
 
     def __str__(self):
-        return f"{self.student.username} - {'Completed' if self.is_completed else 'Not Completed'} {self.content} in {self.course.name}"        
+        return f"{self.student.username} - {'Completed' if self.is_completed else 'Not Completed'} {self.content} in {self.course.name}"
+    
+class Certificate(models.Model):
+    student = models.ForeignKey(User, on_delete=models.CASCADE, related_name='certificates')
+    course = models.ForeignKey(Course, on_delete=models.CASCADE)
+    issued_on = models.DateTimeField(auto_now_add=True)
+    certificate_url = models.URLField(blank=True, null=True)
+
+    def __str__(self):
+        return f'{self.student.username} - {self.course.title}'

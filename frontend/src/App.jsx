@@ -1,7 +1,7 @@
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Login from "./components/Login";
 import Signup from './components/Signup';
-import Dashboard from './components/Dashboard';
+import StudentDashboard from './components/Dashboard';
 import Navbar from './components/Navbar';
 import PrivateRoute from './PrivateRoute';
 import "./index.css";
@@ -13,6 +13,8 @@ import AddModuleForm from './components/Courses/AddModuleForm';
 import AddModuleContent from './components/Courses/AddModuleContent';
 import EditModule from './components/Courses/EditModule';
 import AddCourseForm from './components/Courses/AddCourse';
+import Profile from './components/Profile';
+
 function App() {
   return (
     <Router>
@@ -24,7 +26,12 @@ function App() {
         <Route path="/courses/:slug" element={<CourseDetails />} />
         <Route path="/dashboard" element={
           <PrivateRoute>
-            <Dashboard />
+            <StudentDashboard />
+          </PrivateRoute>
+        } />
+        <Route path="/profile" element={
+          <PrivateRoute>
+            <Profile />
           </PrivateRoute>
         } />
         <Route path="/edit_profile" element={

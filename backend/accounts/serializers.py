@@ -43,5 +43,10 @@ class UserSerializer(serializers.ModelSerializer):
 class UserUpdateSerializer(serializers.ModelSerializer):
     class Meta:
         model = CustomUser
-        fields = ['first_name', 'last_name', 'email', 'profile_image', 'bio', 'phone_number', 'date_of_birth']
-        
+        fields = ['first_name', 'last_name', 'email', 'profile_image', 'bio', 'phone_number', 'date_of_birth', 'banner_image']
+
+class Profile(serializers.ModelSerializer):
+
+    class Meta:
+        model = CustomUser
+        fields = ['first_name', 'last_name', 'username','email', 'profile_image', 'banner_image', 'bio', 'phone_number', 'date_of_birth', 'joined_at', 'is_verified', 'is_teacher'  ]
