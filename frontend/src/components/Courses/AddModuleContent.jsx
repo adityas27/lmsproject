@@ -111,6 +111,7 @@ useEffect(() => {
         )}
 
         {form.content_type === 'video' && (
+          <>
           <input
             type="url"
             name="video_url"
@@ -119,15 +120,32 @@ useEffect(() => {
             placeholder="YouTube or video URL"
             className="w-full p-2 border rounded"
           />
+          <textarea
+            name="text"
+            value={form.text}
+            onChange={handleChange}
+            placeholder="Text content"
+            className="w-full p-2 border rounded"
+          />
+          </>
         )}
 
         {form.content_type === 'file' && (
+          <>
           <input
             type="file"
             name="file"
             onChange={handleChange}
             className="w-full p-2 border rounded"
           />
+          <textarea
+            name="text"
+            value={form.text}
+            onChange={handleChange}
+            placeholder="Text content"
+            className="w-full p-2 border rounded"
+          />
+          </>
         )}
 
         <input

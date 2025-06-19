@@ -98,11 +98,11 @@ class CourseProgressSerializer(serializers.ModelSerializer):
         return round((completed / total) * 100) if total else 0
 
 class CertificateSerializer(serializers.ModelSerializer):
-    course_title = serializers.CharField(source='course.title')
-
     class Meta:
         model = Certificate
-        fields = ['id', 'course_title', 'issued_on', 'certificate_url']
+        fields = '__all__'
+        read_only_fields = ['student', 'issued_at', 'pdf_file']
+
 
 class DashboardSerializer(serializers.Serializer):
     full_name = serializers.CharField(source='get_full_name')
@@ -111,7 +111,7 @@ class DashboardSerializer(serializers.Serializer):
     bio = serializers.CharField(source='profile.bio', default='')
     enrolled_courses = CourseProgressSerializer(source='courses_enrolled', many=True)
     completed_courses = serializers.SerializerMethodField()
-    certificates = CertificateSerializer(many=True)
+    certificates = CertificateSerializer(source='certificate_set', many=True)
     
     def get_completed_courses(self, obj):
         completed = []
@@ -124,3 +124,17 @@ class DashboardSerializer(serializers.Serializer):
                     'slug': course.slug,
                 })
         return completed
+
+class PendingCertificateSerializer(serializers.ModelSerializer):
+    student_name = serializers.CharField(source='student.get_full_name')
+    student_email = serializers.EmailField(source='student.email')
+    course_title = serializers.CharField(source='course.name')
+    progress = serializers.SerializerMethodField()
+
+    class Meta:
+        model = Certificate
+        fields = ['id', 'student_name', 'student_email', 'course_title', 'status', 'applied_at', 'progress']
+
+    def get_progress(self, obj):
+        return ContentProgress.get_course_progress_percent(obj.student, obj.course)
+

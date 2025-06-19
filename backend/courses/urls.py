@@ -19,5 +19,9 @@ urlpatterns = [
     path('courses/<slug:course_id>/progress/', views.course_progress, name='course-progress'),
     # User Dashboard
     path('dashboard/', views.user_dashboard_view, name='user-dashboard'),
-
+    # Certificates
+    path('certificates/apply/<slug:course_id>/', views.apply_for_certificate, name='apply-certificate'),
+    path('certificates/approve/<int:cert_id>/', views.approve_certificate, name='approve-certificate'),
+    path('certificates/reject/<int:cert_id>/', views.reject_certificate, name='reject-certificate'),
+    path('certificates/pending/', views.pending_certificates_view, name='pending-certificates'),
 ]

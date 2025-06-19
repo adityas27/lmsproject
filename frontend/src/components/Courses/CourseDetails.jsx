@@ -27,6 +27,7 @@ const CourseDetailPage = () => {
         },
       });
       setCourse(response.data);
+      console.log(response.data);
       setFormData({
         name: response.data.name,
         description: response.data.description,
@@ -147,7 +148,6 @@ const CourseDetailPage = () => {
         </form>
       )}
 
-
       <h1 className="text-3xl font-bold mb-2">{course.name}</h1>
       <p className="text-gray-700 mb-4">{course.description}</p>
       <div className="mt-6 p-4 border rounded-lg bg-gray-50">
@@ -156,7 +156,6 @@ const CourseDetailPage = () => {
         <p><strong>Created:</strong> {new Date(course.created_at).toLocaleDateString()}</p>
         <p><strong>Price:</strong> Rs.{course.price}/-</p>
         <p className='text-yellow-500 text-lg'><strong>Rating:</strong>{renderStars(course.rating)} ({course.rating}/5) </p>
-        <p><strong>Created:</strong> {new Date(course.created_at).toLocaleDateString()}</p>
       </div>
       <br />
       {!course.is_enrolled ? (
@@ -178,6 +177,62 @@ const CourseDetailPage = () => {
           </Link>
         </div>
       )}
+      {/* Certificate Actions */}
+{course.is_enrolled && (
+  <div className="my-6">
+    {progress?.progress === 100 && (
+      <button
+        onClick={async () => {
+          try {
+            console.log(`${localStorage.getItem('access')}`)
+            await axios.post(
+              `http://127.0.0.1:8000/api/courses/certificates/apply/${course.slug}/`, 
+              {},
+              { headers: { Authorization:  `Bearer ${localStorage.getItem('access')}` } }
+            );
+            alert("Certificate request sent!");
+            fetchCourse(); // Optional: refresh course state
+          } catch (error) {
+            console.error(error);
+            alert("Already applied or error occurred.");
+          }
+        }}
+        className="bg-purple-600 text-white px-4 py-2 rounded hover:bg-purple-700"
+      >
+        Apply for Certificate
+      </button>
+    )}
+  </div>
+)}
+
+{course.is_author && (
+  <div className="my-4">
+    <Link to={`/pending/certificates/applications/`}>
+      <button className="bg-yellow-600 text-white px-4 py-2 rounded hover:bg-yellow-700">
+        View Certificate Requests
+      </button>
+    </Link>
+  </div>
+)}
+{course.is_enrolled && course.certificate && (
+  <div className="mt-4 p-4 bg-gray-100 rounded border">
+    <p className="font-medium text-gray-800">
+      Certificate Status: <span className="capitalize">{course.certificate.status}</span>
+    </p>
+
+    {course.certificate.status === 'approved' && course.certificate.pdf_file && (
+      <a
+        href={course.certificate.pdf_file}
+        target="_blank"
+        rel="noopener noreferrer"
+        className="text-blue-600 underline mt-2 inline-block"
+      >
+        🎓 View Certificate PDF
+      </a>
+    )}
+  </div>
+)}
+
     </div>
   );
 };

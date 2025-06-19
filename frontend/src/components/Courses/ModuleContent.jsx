@@ -53,6 +53,32 @@ const ModuleContentDetail = () => {
     }
   };
 
+  function extractYouTubeID(url) {
+  try {
+    const parsedUrl = new URL(url);
+    const hostname = parsedUrl.hostname;
+
+    if (hostname === 'youtu.be') {
+      return parsedUrl.pathname.slice(1); // remove leading slash
+    }
+
+    if (hostname === 'www.youtube.com' || hostname === 'youtube.com') {
+      if (parsedUrl.pathname === '/watch') {
+        return parsedUrl.searchParams.get('v');
+      }
+
+      if (parsedUrl.pathname.startsWith('/embed/')) {
+        return parsedUrl.pathname.split('/embed/')[1];
+      }
+    }
+
+    return null; // Not a valid YouTube link
+  } catch (err) {
+    return null;
+  }
+}
+  const videoID = content?.video_url ? extractYouTubeID(content.video_url) : null;
+
   if (loading) return <div className="p-6 text-center">Loading...</div>;
   if (!content) return <div className="p-6 text-red-500">Content not found</div>;
 
@@ -84,12 +110,11 @@ const ModuleContentDetail = () => {
       {content.content_type === 'video' && (
         <div>
           <h4 className="font-semibold mb-2">Video</h4>
-          <iframe
-            src={content.video_url}
-            title="Video Content"
-            className="w-full h-64 rounded border"
-            allowFullScreen
-          />
+          <iframe width="720" height="450" src={`https://www.youtube.com/embed/${videoID}`} title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+          <br />
+          <hr/>
+          <br />
+          <p>{content.text}</p>
         </div>
       )}
 

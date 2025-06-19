@@ -55,7 +55,7 @@ class Course(models.Model):
     subcategory = models.ForeignKey(SubCategory, on_delete=models.SET_NULL, null=True, related_name='courses')
     tags = models.ManyToManyField('Tag', blank=True)
     students_enrolled = models.ManyToManyField(User, through='Enrollment', related_name='courses_enrolled', blank=True)
-
+    auto_certificate = models.BooleanField(default=True)
     def save(self, *args, **kwargs):
         if not self.slug:
             base_slug = slugify(self.name)
@@ -145,11 +145,25 @@ class ContentProgress(models.Model):
     def __str__(self):
         return f"{self.student.username} - {'Completed' if self.is_completed else 'Not Completed'} {self.content} in {self.course.name}"
     
-class Certificate(models.Model):
-    student = models.ForeignKey(User, on_delete=models.CASCADE, related_name='certificates')
-    course = models.ForeignKey(Course, on_delete=models.CASCADE)
-    issued_on = models.DateTimeField(auto_now_add=True)
-    certificate_url = models.URLField(blank=True, null=True)
+    def get_course_progress_percent(user, course):
+        total = ModuleContent.objects.filter(module__course=course).count()
+        completed = ContentProgress.objects.filter(student=user, content__module__course=course, is_completed=True).count()
+        return int((completed / total) * 100) if total else 0
 
-    def __str__(self):
-        return f'{self.student.username} - {self.course.title}'
+
+class Certificate(models.Model):
+    student = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    course = models.ForeignKey(Course, on_delete=models.CASCADE)
+    # is_approved = models.BooleanField(default=False)
+    pdf_file = models.FileField(upload_to='certificates/', null=True, blank=True)
+    status = models.CharField(max_length=10, choices=[
+        ('pending', 'Pending'),
+        ('approved', 'Approved'),
+        ('rejected', 'Rejected'),
+    ], default='pending')
+    applied_at = models.DateTimeField(auto_now_add=True)
+    issued_at = models.DateTimeField(null=True, blank=True)
+
+    class Meta:
+        unique_together = ('student', 'course')
+

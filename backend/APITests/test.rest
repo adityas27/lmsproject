@@ -63,13 +63,24 @@ GET http://127.0.0.1:8000/api/courses/courses
 Content-Type: application/json
 Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzQ4MDY5ODE5LCJpYXQiOjE3NDgwNjk1MTksImp0aSI6IjRhZmM2NDYzMjliODQ2NTViYmUzMzc2NDRhYTNmNDRiIiwidXNlcl9pZCI6Mn0.z7Nj_ZDqNjxAYGTFVq2mEzxgDtoQibDgwb-KcFTIfTA
 
-### Mark Content as Completed
-POST http://127.0.0.1:8000/api/courses/content-progress/complete/
+### Apply for a Certificate
+POST http://127.0.0.1:8000/api/courses/certificates/apply/javascript-101-9c4c6a/
 Content-Type: application/json
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzQ5NDE4MzY4LCJpYXQiOjE3NDkyNDU1NjgsImp0aSI6Ijk0NDk4ZDkwMjBiMDQxZmNiNTRmMzZiMDExZTU1YjQzIiwidXNlcl9pZCI6Mn0.sqhiD2wcbJBwPt5grXwxRyHDiUvlxgKpqE97VZvjGtk
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzUwNDU0NjEwLCJpYXQiOjE3NTAyODE4MTAsImp0aSI6IjZkY2FlNzk1OWE0NzRlYzZiNTQzMmNhNzNlMjViN2NlIiwidXNlcl9pZCI6M30.C9FgmkIQtTyNY1EEwXHatDc9jsJ6Um7EfSAbW89_ONc
 
 
-{
-  "content_id": 6,
-  "course_id": "javascript-101-9c4c6a"
-}
+### Approve the Certificate
+POST http://127.0.0.1:8000/api/courses/certificates/approve/2/
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzUwMzYzNzkxLCJpYXQiOjE3NTAxOTA5OTEsImp0aSI6IjJmODQyZTBlNGY2YTRiZWI4YTJhOTUwMzIwYTU4ZTZiIiwidXNlcl9pZCI6Mn0.v5gv4Cig1KNFqVPQwDG99D2cYlKjYMeGAkLpaQXpT1o
+
+### List all Pending Certificates to be Approved/Rejected
+GET http://127.0.0.1:8000/api/courses/certificates/pending
+Authorization:  Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzUwMzYzNzkxLCJpYXQiOjE3NTAxOTA5OTEsImp0aSI6IjJmODQyZTBlNGY2YTRiZWI4YTJhOTUwMzIwYTU4ZTZiIiwidXNlcl9pZCI6Mn0.v5gv4Cig1KNFqVPQwDG99D2cYlKjYMeGAkLpaQXpT1o
+
+### Reject the Certificate
+POST http://127.0.0.1:8000/api/courses/certificates/reject/2/
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzUwMzYzNzkxLCJpYXQiOjE3NTAxOTA5OTEsImp0aSI6IjJmODQyZTBlNGY2YTRiZWI4YTJhOTUwMzIwYTU4ZTZiIiwidXNlcl9pZCI6Mn0.v5gv4Cig1KNFqVPQwDG99D2cYlKjYMeGAkLpaQXpT1o
+
+#

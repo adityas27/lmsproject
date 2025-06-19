@@ -6,10 +6,9 @@ from .models import Course
 from .serializers import CourseSerializer
 from django.shortcuts import get_object_or_404
 from .models import Module, ModuleContent, Enrollment, ContentProgress, Certificate
-from .serializers import ModuleSerializer, ModuleContentSerializer, ContentProgressSerializer, CertificateSerializer, DashboardSerializer
-from django.utils.timezone import now
+from .serializers import ModuleSerializer, ModuleContentSerializer, ContentProgressSerializer,PendingCertificateSerializer,  CertificateSerializer, DashboardSerializer
+from .utils.certificate_generator import generate_certificate_pdf
 from django.utils import timezone
-
 # Helper function to check if the user is the author of the course and if they are enrolled in the course
 def user_is_author(user, module_content):
     # Check if user is the author of the course the module_content belongs to
@@ -40,13 +39,19 @@ def course_list_create(request):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 @api_view(['GET', 'PUT', 'PATCH', 'DELETE'])
-@permission_classes([permissions.IsAuthenticatedOrReadOnly])
+@permission_classes([IsAuthenticated])
 def course_detail(request, slug):
     course = get_object_or_404(Course, slug=slug)
-
     if request.method == 'GET':
         serializer = CourseSerializer(course, context={'request': request})
-        return Response(serializer.data)
+        data = serializer.data
+        try:
+            certificate = Certificate.objects.get(student=request.user, course=course)
+            cert_serializer = CertificateSerializer(certificate, context={'request': request})
+            data['certificate'] = cert_serializer.data
+        except Certificate.DoesNotExist:
+            data['certificate'] = None
+        return Response(data)
 
     elif request.method in ['PUT', 'PATCH']:
         if course.author != request.user:
@@ -235,4 +240,66 @@ def user_dashboard_view(request):
     serializer = DashboardSerializer(user, context={'request': request})
     data = serializer.data
     data['certificates'] = CertificateSerializer(user_certificates, many=True).data
+    print(data['certificates'])
     return Response(data)
+
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def apply_for_certificate(request, course_id):
+    course = Course.objects.get(slug=course_id)
+    cert, created = Certificate.objects.get_or_create(student=request.user, course=course)
+    if cert.status == 'approved':
+        return Response({"res": "Certificate already approved."})
+    if cert.status == 'rejected':
+        cert.status = 'pending'
+        cert.applied_at = timezone.now()
+        cert.save()
+        return Response({"res": "Certificate application was rejected, now its updated to pending approval."})
+    student_name = cert.student.first_name + cert.student.last_name 
+    course_title = cert.course.name
+    if course.auto_certificate:
+        cert.is_approved = True
+        pdf_path = generate_certificate_pdf(student_name, course_title, cert.id)
+        cert.pdf_file = pdf_path
+        cert.save()
+
+    serializer = CertificateSerializer(cert)
+    return Response(serializer.data)
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def approve_certificate(request, cert_id):
+    cert = Certificate.objects.get(id=cert_id)
+    student_name = cert.student.first_name + cert.student.last_name 
+    course_title = cert.course.name
+
+    if request.user != cert.course.author:
+        return Response({"error": "Unauthorized"}, status=403)
+    cert.status = 'approved'
+    cert.issued_at = timezone.now()
+    pdf_path = generate_certificate_pdf(student_name, course_title, cert.id)
+    cert.pdf_file = pdf_path
+    cert.save()
+    return Response({"success": "Certificate approved."})
+
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def pending_certificates_view(request):
+    user = request.user
+    certificates = Certificate.objects.filter(
+        course__author=user,
+    ).select_related('student', 'course')
+
+    serializer = PendingCertificateSerializer(certificates, many=True)
+    return Response(serializer.data)
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def reject_certificate(request, cert_id):
+    cert = Certificate.objects.get(pk=cert_id, course__author=request.user)
+    cert.status = 'rejected'
+    cert.save()
+    return Response({'detail': 'Certificate rejected'}, status=200)
+

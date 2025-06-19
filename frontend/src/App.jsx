@@ -14,7 +14,7 @@ import AddModuleContent from './components/Courses/AddModuleContent';
 import EditModule from './components/Courses/EditModule';
 import AddCourseForm from './components/Courses/AddCourse';
 import Profile from './components/Profile';
-
+import PendingCertificates from './components/PendingCert';
 function App() {
   return (
     <Router>
@@ -43,6 +43,12 @@ function App() {
         <Route path="/module-contents/:id" element={
           <PrivateRoute>
             <ModuleContentDetail />
+          </PrivateRoute>
+          } />
+        
+        <Route path="/pending/certificates/applications/" element={
+          <PrivateRoute>
+            <PendingCertificates />
           </PrivateRoute>
           } />
         <Route path="/courses/:slug/add-module" element={<AddModuleForm />} />
