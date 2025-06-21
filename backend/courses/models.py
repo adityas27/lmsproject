@@ -167,3 +167,22 @@ class Certificate(models.Model):
     class Meta:
         unique_together = ('student', 'course')
 
+class Assignment(models.Model):
+    module = models.ForeignKey(Module, on_delete=models.CASCADE, related_name='assignments')
+    title = models.CharField(max_length=255)
+    description = models.TextField()
+    attachment = models.FileField(upload_to='assignments/', null=True, blank=True)
+    deadline = models.DateTimeField(null=True, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+class AssignmentSubmission(models.Model):
+    assignment = models.ForeignKey(Assignment, on_delete=models.CASCADE, related_name='submissions')
+    student = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    submitted_files = models.FileField(upload_to='submissions/')  # use ManyToMany if allowing multiple
+    submitted_at = models.DateTimeField(auto_now_add=True)
+    corrected_file = models.FileField(upload_to='corrected/', null=True, blank=True)
+    grade = models.DecimalField(max_digits=5, decimal_places=2, null=True, blank=True)
+    feedback = models.TextField(null=True, blank=True)
+
+    class Meta:
+        unique_together = ('assignment', 'student')

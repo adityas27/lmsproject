@@ -2,13 +2,12 @@ from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework import status, permissions
-from .models import Course
-from .serializers import CourseSerializer
 from django.shortcuts import get_object_or_404
-from .models import Module, ModuleContent, Enrollment, ContentProgress, Certificate
-from .serializers import ModuleSerializer, ModuleContentSerializer, ContentProgressSerializer,PendingCertificateSerializer,  CertificateSerializer, DashboardSerializer
+from .models import Module, Course, ModuleContent, Enrollment, ContentProgress, Certificate, Assignment, AssignmentSubmission
+from .serializers import ModuleSerializer, ModuleContentSerializer,CourseSerializer,PendingCertificateSerializer,  CertificateSerializer, DashboardSerializer, AssignmentSerializer, AssignmentSubmissionSerializer
 from .utils.certificate_generator import generate_certificate_pdf
 from django.utils import timezone
+
 # Helper function to check if the user is the author of the course and if they are enrolled in the course
 def user_is_author(user, module_content):
     # Check if user is the author of the course the module_content belongs to
@@ -19,11 +18,20 @@ def user_is_enrolled(user, module_content):
     course = module_content.module.course
     return user in course.students_enrolled.all()
 
-
-
 @api_view(['GET', 'POST'])
 @permission_classes([permissions.IsAuthenticatedOrReadOnly])
 def course_list_create(request):
+    """
+    Handles GET and POST requests for courses.
+    GET: Returns a list of all courses, filtered by published status if the user is not authenticated.
+    POST: Creates a new course if the user is authenticated.
+    If the user is authenticated, they can create a course.
+
+    Args:
+        request (Object): Django request object containing the data for the course creation.
+    Returns:
+        HTTP Response
+    """
     if request.method == 'GET':
         courses = Course.objects.all()
         if not request.user.is_authenticated:
@@ -41,6 +49,18 @@ def course_list_create(request):
 @api_view(['GET', 'PUT', 'PATCH', 'DELETE'])
 @permission_classes([IsAuthenticated])
 def course_detail(request, slug):
+    """
+    Handles GET, PUT, PATCH, and DELETE requests for a specific course.
+    GET: Retrieve course details, including certificate if exists. 
+    PUT/PATCH: Update course details if the user is the author.
+    DELETE: Delete the course if the user is the author.
+    Args:
+        request (Object): Django request object containing the data for the course.
+        slug (Slug): course slug
+
+    Returns:
+        HTTP Response
+    """
     course = get_object_or_404(Course, slug=slug)
     if request.method == 'GET':
         serializer = CourseSerializer(course, context={'request': request})
@@ -70,6 +90,17 @@ def course_detail(request, slug):
 
 @api_view(['GET', 'POST'])
 def module_list_create_view(request):
+    """
+    Handles GET and POST requests for modules.
+    GET: Returns a list of all modules.
+    POST: Creates a new module if the user is the author of the course.
+
+    Args:
+        request (Object): Django request object containing the data for the module creation.
+
+    Returns:
+        HTTP Response
+    """
     course_slug = request.data.get('course')
     course = get_object_or_404(Course, slug=course_slug)
 
@@ -94,6 +125,13 @@ def module_list_create_view(request):
 
 @api_view(['GET', 'PUT', 'PATCH', 'DELETE'])
 def module_detail_view(request, slug):
+
+    """
+    Handles GET, PUT, PATCH, and DELETE requests for a specific module.
+    GET: Retrieve module details.
+    PUT/PATCH: Update module details.
+    DELETE: Delete the module.
+    """
     module = get_object_or_404(Module, slug=slug)
 
     if request.method == 'GET':
@@ -114,13 +152,44 @@ def module_detail_view(request, slug):
 @api_view(['GET', 'POST'])
 @permission_classes([IsAuthenticated])
 def module_content_list_create_view(request):
+    """
+    Has no significane yet, but will be used in future.
+    Handles GET and POST requests for module contents.
+    GET: Returns a list of contents for a specific module.  
+    POST: Creates a new module content if the user is the author of the course related to the module.
+    Handles the details page for a specific module. Will send Graded Assignments and Module Contents for GET requests. along side pre requisites and other details.
+    
+    Args:
+        request (Object): Django request object containing the data for the module content creation.
+    Returns:
+        HTTP Response
+    """
     if request.method == 'GET':
-        module = Module.objects.get(slug=module_slug)
-        print(module.course.author)
-        # Same as before: only enrolled students can view module contents
-        contents = ModuleContent.objects.filter(module__course__students_enrolled=request.user)
-        serializer = ModuleContentSerializer(contents, many=True, context={'request': request})                                                                                     
-        return Response(serializer.data)
+        module_slug = request.query_params.get('module_slug')
+        if not module_slug:
+            return Response({'detail': 'Module slug is required.'}, status=400)
+
+        try:
+            module = Module.objects.get(slug=module_slug)
+        except Module.DoesNotExist:
+            return Response({'detail': 'Module not found.'}, status=404)
+
+        # Only enrolled students or author can view
+        is_enrolled = module.course.students_enrolled.filter(id=request.user.id).exists()
+        is_author = module.course.author == request.user
+
+        if not (is_enrolled or is_author):
+            return Response({'detail': 'You are not authorized to view this module.'}, status=403)
+
+        contents = ModuleContent.objects.filter(module=module)
+        assignments = Assignment.objects.filter(module=module)
+
+        content_data = ModuleContentSerializer(contents, many=True, context={'request': request}).data
+        assignment_data = AssignmentSerializer(assignments, many=True, context={'request': request}).data
+
+        combined = sorted(content_data + assignment_data, key=lambda x: x.get('created_at', ''))
+        print(combined)
+        return Response(combined)
 
     elif request.method == 'POST':
         # Extract module slug/id from request.data to check author permission
@@ -128,8 +197,6 @@ def module_content_list_create_view(request):
  
         if not module_slug:
             return Response({'module': 'This field is required.'}, status=status.HTTP_400_BAD_REQUEST)
-
-        from .models import Module  # make sure imported
 
         try:
             module = Module.objects.get(slug=module_slug)
@@ -150,6 +217,19 @@ def module_content_list_create_view(request):
 @api_view(['GET', 'PUT', 'PATCH', 'DELETE'])
 @permission_classes([IsAuthenticated])
 def module_content_detail_view(request, pk):
+    """
+    Handles GET, PUT, PATCH, and DELETE requests for a specific module content.
+    GET: Retrieve module content details.
+    PUT/PATCH: Update module content details if the user is the author. # Not yet implemented in frontend.
+    DELETE: Delete the module content if the user is the author. # Not yet implemented in frontend.
+
+    Args:
+        request (object): Django request object containing the data for the module content.
+        pk (int): ID of the module content to retrieve or modify.
+
+    Returns:
+        HTTP Response
+    """
     content = get_object_or_404(ModuleContent, pk=pk)
 
     if request.method == 'GET':
@@ -179,6 +259,14 @@ def module_content_detail_view(request, pk):
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
 def enroll_student(request, slug):
+    """
+    Handles enrollment of a student in a course.
+    Args:
+        request (object): Django request object containing the data for enrollment.
+        slug (str): Slug of the course to enroll in.
+    Returns:
+        HTTP Response
+    """
     try:
         course = Course.objects.get(slug=slug)
     except Course.DoesNotExist:
@@ -193,6 +281,15 @@ def enroll_student(request, slug):
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
 def mark_content_completed(request):
+    """
+    Handles marking a module content as completed by a student.
+    This endpoint expects `content_id` and `course_id` in the request data.
+    Args:
+        request (object): Django request object containing the data for marking content as completed.
+
+    Returns:
+        HTTP Response
+    """
     user = request.user
     content_id = request.data.get('content_id')
     course_id = request.data.get('course_id')
@@ -215,8 +312,6 @@ def mark_content_completed(request):
 
     return Response({'success': True})
 
-
-# views.py
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
 def course_progress(request, course_id):
@@ -303,3 +398,61 @@ def reject_certificate(request, cert_id):
     cert.save()
     return Response({'detail': 'Certificate rejected'}, status=200)
 
+
+@api_view(['GET', 'POST'])
+@permission_classes([IsAuthenticated])
+def assignment_list_create(request, module_id):
+    if request.method == 'GET':
+        assignments = Assignment.objects.filter(module__id=module_id)
+        serializer = AssignmentSerializer(assignments, many=True)
+        return Response(serializer.data)
+
+    elif request.method == 'POST':
+        try:
+            module = Module.objects.get(id=module_id)
+        except Module.DoesNotExist:
+            return Response({"detail": "Module not found."}, status=404)
+
+        serializer = AssignmentSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save(module=module)
+            return Response(serializer.data, status=201)
+        return Response(serializer.errors, status=400)
+
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def submit_assignment(request, assignment_id):
+    try:
+        assignment = Assignment.objects.get(id=assignment_id)
+    except Assignment.DoesNotExist:
+        return Response({'detail': 'Assignment not found.'}, status=404)
+
+    serializer = AssignmentSubmissionSerializer(data=request.data)
+    if serializer.is_valid():
+        serializer.save(student=request.user, assignment=assignment)
+        return Response(serializer.data, status=201)
+    return Response(serializer.errors, status=400)
+
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def view_submissions(request, assignment_id):
+    submissions = AssignmentSubmission.objects.filter(assignment__id=assignment_id)
+    serializer = AssignmentSubmissionSerializer(submissions, many=True)
+    return Response(serializer.data)
+
+
+@api_view(['PATCH'])
+@permission_classes([IsAuthenticated])
+def grade_submission(request, submission_id):
+    try:
+        submission = AssignmentSubmission.objects.get(id=submission_id)
+    except AssignmentSubmission.DoesNotExist:
+        return Response({'detail': 'Submission not found.'}, status=404)
+
+    serializer = AssignmentSubmissionSerializer(submission, data=request.data, partial=True)
+    if serializer.is_valid():
+        serializer.save()
+        return Response(serializer.data)
+    return Response(serializer.errors, status=400)

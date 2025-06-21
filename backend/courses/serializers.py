@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Course, Module, ModuleContent, Enrollment, ContentProgress, Certificate
+from .models import Course, Module, ModuleContent, Enrollment, ContentProgress, Certificate, Assignment, AssignmentSubmission
 from accounts.serializers import AuthorSerializer
 
 class ModuleContentSerializer(serializers.ModelSerializer):
@@ -138,3 +138,20 @@ class PendingCertificateSerializer(serializers.ModelSerializer):
     def get_progress(self, obj):
         return ContentProgress.get_course_progress_percent(obj.student, obj.course)
 
+
+class AssignmentSerializer(serializers.ModelSerializer):
+    type = serializers.SerializerMethodField()
+
+    class Meta:
+        model = Assignment
+        fields = ['id', 'type', 'title', 'description', 'attachment', 'deadline', 'created_at']
+
+    def get_type(self, obj):
+        return 'assignment'
+
+
+class AssignmentSubmissionSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = AssignmentSubmission
+        fields = '__all__'
+        read_only_fields = ['student', 'submitted_at']

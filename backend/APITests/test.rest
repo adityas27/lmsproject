@@ -61,13 +61,13 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiY
 ### RETRIEVING A COURSE
 GET http://127.0.0.1:8000/api/courses/courses
 Content-Type: application/json
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzQ4MDY5ODE5LCJpYXQiOjE3NDgwNjk1MTksImp0aSI6IjRhZmM2NDYzMjliODQ2NTViYmUzMzc2NDRhYTNmNDRiIiwidXNlcl9pZCI6Mn0.z7Nj_ZDqNjxAYGTFVq2mEzxgDtoQibDgwb-KcFTIfTA
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzUwNjIzNzgwLCJpYXQiOjE3NTA0NTA5ODAsImp0aSI6ImM1OWNjNDllMmUxYTRmNjg5YTBmMGI4M2E3NjhkOTdjIiwidXNlcl9pZCI6Mn0.UsXVORe40jQrAvdvpxb0p0jvw_OHkCtXaib6wmEOyKw
+
 
 ### Apply for a Certificate
 POST http://127.0.0.1:8000/api/courses/certificates/apply/javascript-101-9c4c6a/
 Content-Type: application/json
 Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzUwNDU0NjEwLCJpYXQiOjE3NTAyODE4MTAsImp0aSI6IjZkY2FlNzk1OWE0NzRlYzZiNTQzMmNhNzNlMjViN2NlIiwidXNlcl9pZCI6M30.C9FgmkIQtTyNY1EEwXHatDc9jsJ6Um7EfSAbW89_ONc
-
 
 ### Approve the Certificate
 POST http://127.0.0.1:8000/api/courses/certificates/approve/2/
@@ -82,5 +82,3 @@ Authorization:  Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoi
 POST http://127.0.0.1:8000/api/courses/certificates/reject/2/
 Content-Type: application/json
 Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzUwMzYzNzkxLCJpYXQiOjE3NTAxOTA5OTEsImp0aSI6IjJmODQyZTBlNGY2YTRiZWI4YTJhOTUwMzIwYTU4ZTZiIiwidXNlcl9pZCI6Mn0.v5gv4Cig1KNFqVPQwDG99D2cYlKjYMeGAkLpaQXpT1o
-
-#

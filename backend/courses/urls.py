@@ -9,7 +9,7 @@ urlpatterns = [
     path('modules/', views.module_list_create_view, name='module-list-create'),
     path('modules/<slug:slug>/', views.module_detail_view, name='module-detail'),
     # Module Contents
-    path('contents/', views.module_content_list_create_view, name='content-list-create'),
+    # path('contents/', views.module_content_list_create_view, name='content-list-create'),
     path('contents/<int:pk>/', views.module_content_detail_view, name='content-detail'),
     # Enrollment
     path('courses/<slug:slug>/enroll/', views.enroll_student, name='enroll-student'),
