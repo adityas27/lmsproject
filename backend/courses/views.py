@@ -354,7 +354,7 @@ def apply_for_certificate(request, course_id):
     student_name = cert.student.first_name + cert.student.last_name 
     course_title = cert.course.name
     if course.auto_certificate:
-        cert.is_approved = True
+        cert.status = 'approved'
         pdf_path = generate_certificate_pdf(student_name, course_title, cert.id)
         cert.pdf_file = pdf_path
         cert.save()
@@ -403,13 +403,15 @@ def reject_certificate(request, cert_id):
 @permission_classes([IsAuthenticated])
 def assignment_list_create(request, module_id):
     if request.method == 'GET':
-        assignments = Assignment.objects.filter(module__id=module_id)
-        serializer = AssignmentSerializer(assignments, many=True)
+        assignments = Assignment.objects.filter(module__slug=module_id)
+        serializer = AssignmentSerializer(assignments, many=True, context={'request': request})
+        print("Assignments for module:", module_id, "are", serializer.data)
         return Response(serializer.data)
 
     elif request.method == 'POST':
         try:
-            module = Module.objects.get(id=module_id)
+            print("tried", module_id)
+            module = Module.objects.get(slug=module_id)
         except Module.DoesNotExist:
             return Response({"detail": "Module not found."}, status=404)
 
@@ -428,6 +430,14 @@ def submit_assignment(request, assignment_id):
     except Assignment.DoesNotExist:
         return Response({'detail': 'Assignment not found.'}, status=404)
 
+    ## Check if the user is enrolled in the course of the assignment's module
+    if not Enrollment.objects.filter(student=request.user, course=assignment.module.course).exists():
+        return Response({'detail': 'You are not enrolled in this course.'}, status=403)
+    
+    # Check if the assignment is already submitted by the user
+    if AssignmentSubmission.objects.filter(student=request.user, assignment=assignment).exists():
+        return Response({'detail': 'You have already submitted this assignment.'}, status=400)
+
     serializer = AssignmentSubmissionSerializer(data=request.data)
     if serializer.is_valid():
         serializer.save(student=request.user, assignment=assignment)
@@ -439,7 +449,7 @@ def submit_assignment(request, assignment_id):
 @permission_classes([IsAuthenticated])
 def view_submissions(request, assignment_id):
     submissions = AssignmentSubmission.objects.filter(assignment__id=assignment_id)
-    serializer = AssignmentSubmissionSerializer(submissions, many=True)
+    serializer = AssignmentSubmissionSerializer(submissions, many=True, context={'request': request})
     return Response(serializer.data)
 
 
@@ -451,7 +461,10 @@ def grade_submission(request, submission_id):
     except AssignmentSubmission.DoesNotExist:
         return Response({'detail': 'Submission not found.'}, status=404)
 
-    serializer = AssignmentSubmissionSerializer(submission, data=request.data, partial=True)
+    if submission.assignment.module.course.author != request.user:
+        return Response({'detail': 'Not authorized to grade this submission.'}, status=403)
+
+    serializer = AssignmentSubmissionSerializer(submission, data=request.data, partial=True, context={'request': request})
     if serializer.is_valid():
         serializer.save()
         return Response(serializer.data)

@@ -1,0 +1,32 @@
+### Login
+POST http://127.0.0.1:8000/api/accounts/login/
+Content-Type: application/json
+
+{
+    "username": "janedoe",
+    "password": "StrongPass456!"
+}
+
+### 📝 Create Assignment (as course author)
+POST http://127.0.0.1:8000/api/courses/modules/dom-3cd822/assignments/
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzUwODAwMTIxLCJpYXQiOjE3NTA2MjczMjEsImp0aSI6IjlhNTMxNTlhZDhiZTRmNjFiMjk3NjJmYWMwOTdkNTc5IiwidXNlcl9pZCI6Mn0.lTn2Rct_w3OLld00LZNJ6G952rE6S5XBnifLAQNLH4E
+Content-Type: application/json
+
+{
+  "module": "dom-3cd822",
+  "title": "Assignment 1",
+  "description": "Complete the tasks in the attached PDF.",
+  "deadline": "2025-07-01T23:59:00Z"
+}
+
+### 📤 Submit Assignment (as student) # Tested this on postman because of testing file upload
+POST http://127.0.0.1:8000/api/courses/assignments/1/submit/
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzUwODAwMTIxLCJpYXQiOjE3NTA2MjczMjEsImp0aSI6IjlhNTMxNTlhZDhiZTRmNjFiMjk3NjJmYWMwOTdkNTc5IiwidXNlcl9pZCI6Mn0.lTn2Rct_w3OLld00LZNJ6G952rE6S5XBnifLAQNLH4E
+Content-Type: application/json
+
+{
+  "submitted_files": "http://localhost:8000/media/submissions/mywork.pdf",
+  "comment": "Please review my submission.",
+  "assignment": 1
+}
+

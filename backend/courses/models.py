@@ -41,7 +41,6 @@ class Course(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     author = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='courses')
     rating = models.PositiveSmallIntegerField(validators=[MinValueValidator(0), MaxValueValidator(5)], default=0)
-    price = models.DecimalField(max_digits=8, decimal_places=2)
     launch_date = models.DateField()
     is_published = models.BooleanField(default=False)
     thumbnail = models.ImageField(upload_to='course_thumbnails/', null=True, blank=True)
@@ -98,11 +97,11 @@ class Module(models.Model):
 
 class ModuleContent(models.Model):
     CONTENT_TYPES = (
-        ('text', 'Text'),
+        ('text', 'Article'),
         ('video', 'Video'),
-        ('file', 'File'),
+        ('file', 'Document'),
     )
-
+    title = models.CharField(max_length=255, blank=True, null=True, default="Deafault Title for Content")
     module = models.ForeignKey(Module, on_delete=models.CASCADE, related_name='contents')
     order = models.PositiveIntegerField(default=0)
     content_type = models.CharField(max_length=10, choices=CONTENT_TYPES)
@@ -111,7 +110,7 @@ class ModuleContent(models.Model):
     file = models.FileField(upload_to='module_files/', blank=True, null=True)
     is_required = models.BooleanField(default=False)
     duration = models.PositiveIntegerField(default=0, help_text="Duration in minutes (optional)")
-    created_at = models.DateTimeField(auto_now_add=True)
+    created_at = models.DateTimeField(auto_now_add=True)    
 
     class Meta:
         ordering = ['order']
@@ -174,12 +173,14 @@ class Assignment(models.Model):
     attachment = models.FileField(upload_to='assignments/', null=True, blank=True)
     deadline = models.DateTimeField(null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
+    grade = models.DecimalField(max_digits=5, decimal_places=2, null=True, blank=True)
 
 class AssignmentSubmission(models.Model):
     assignment = models.ForeignKey(Assignment, on_delete=models.CASCADE, related_name='submissions')
     student = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     submitted_files = models.FileField(upload_to='submissions/')  # use ManyToMany if allowing multiple
     submitted_at = models.DateTimeField(auto_now_add=True)
+    comment = models.TextField(blank=True, null=True)
     corrected_file = models.FileField(upload_to='corrected/', null=True, blank=True)
     grade = models.DecimalField(max_digits=5, decimal_places=2, null=True, blank=True)
     feedback = models.TextField(null=True, blank=True)

@@ -9,7 +9,7 @@ class ModuleContentSerializer(serializers.ModelSerializer):
     class Meta:
         model = ModuleContent
         fields = [
-            'id', 'content_type', 'text', 'video_url', 'file', 'module', 'course_id',
+            'id', 'title','content_type', 'text', 'video_url', 'file', 'module', 'course_id',
             'order', 'is_required', 'duration', 'created_at', 'is_completed'
         ]
 
@@ -42,7 +42,7 @@ class CourseSerializer(serializers.ModelSerializer):
     class Meta:
         model = Course
         fields = [
-            'slug', 'name', 'description', 'created_at', 'rating', 'price',
+            'slug', 'name', 'description', 'created_at', 'rating',
             'launch_date', 'is_published', 'thumbnail', 'level', 'duration',
             'author', 'category', 'subcategory', 'tags', 'students_enrolled', 'modules', 'is_enrolled', 'is_author',
         ]
@@ -141,17 +141,36 @@ class PendingCertificateSerializer(serializers.ModelSerializer):
 
 class AssignmentSerializer(serializers.ModelSerializer):
     type = serializers.SerializerMethodField()
+    is_author = serializers.SerializerMethodField()
 
     class Meta:
         model = Assignment
-        fields = ['id', 'type', 'title', 'description', 'attachment', 'deadline', 'created_at']
+        fields = ['id', 'module','type', 'title', 'description', 'attachment', 'deadline', 'created_at', 'is_author']
 
     def get_type(self, obj):
         return 'assignment'
-
+    
+    def get_is_author(self, obj):
+        request = self.context.get('request')
+        if request and hasattr(request, 'user'):
+            return obj.module.course.author == request.user
+        return False
+    
 
 class AssignmentSubmissionSerializer(serializers.ModelSerializer):
+    student_name = serializers.SerializerMethodField()
+    is_owner = serializers.SerializerMethodField()
+    
     class Meta:
         model = AssignmentSubmission
         fields = '__all__'
-        read_only_fields = ['student', 'submitted_at']
+        read_only_fields = ['student', 'submitted_at', 'assignment']
+
+    def get_student_name(self, obj):
+        return f"{obj.student.first_name} {obj.student.last_name}"
+
+    def get_is_owner(self, obj):
+        request = self.context.get('request')
+        if request and hasattr(request, 'user'):
+            return obj.student == request.user
+        return False

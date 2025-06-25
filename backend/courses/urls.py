@@ -9,7 +9,7 @@ urlpatterns = [
     path('modules/', views.module_list_create_view, name='module-list-create'),
     path('modules/<slug:slug>/', views.module_detail_view, name='module-detail'),
     # Module Contents
-    # path('contents/', views.module_content_list_create_view, name='content-list-create'),
+    path('contents/', views.module_content_list_create_view, name='content-list-create'),
     path('contents/<int:pk>/', views.module_content_detail_view, name='content-detail'),
     # Enrollment
     path('courses/<slug:slug>/enroll/', views.enroll_student, name='enroll-student'),
@@ -24,4 +24,10 @@ urlpatterns = [
     path('certificates/approve/<int:cert_id>/', views.approve_certificate, name='approve-certificate'),
     path('certificates/reject/<int:cert_id>/', views.reject_certificate, name='reject-certificate'),
     path('certificates/pending/', views.pending_certificates_view, name='pending-certificates'),
+    # Assignments
+    path('modules/<slug:module_id>/assignments/', views.assignment_list_create, name='assignment-list-create'),
+    path('assignments/<int:assignment_id>/submit/', views.submit_assignment, name='assignment-submit'),
+    path('assignments/<int:assignment_id>/submissions/', views.view_submissions, name='view-submissions'),
+    path('submissions/<int:submission_id>/grade/', views.grade_submission, name='grade-submission'),
 ]
+

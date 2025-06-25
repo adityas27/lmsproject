@@ -15,6 +15,8 @@ import EditModule from './components/Courses/EditModule';
 import AddCourseForm from './components/Courses/AddCourse';
 import Profile from './components/Profile';
 import PendingCertificates from './components/PendingCert';
+import AssignmentPanel from './components/Courses/AssignmentPanel';
+import ModuleDetails from './components/Courses/ModuleDetails'; 
 function App() {
   return (
     <Router>
@@ -44,18 +46,44 @@ function App() {
           <PrivateRoute>
             <ModuleContentDetail />
           </PrivateRoute>
-          } />
-        
+        } />
+
         <Route path="/pending/certificates/applications/" element={
           <PrivateRoute>
             <PendingCertificates />
           </PrivateRoute>
-          } />
-        <Route path="/courses/:slug/add-module" element={<AddModuleForm />} />
-        <Route path="/modules/:slug/edit" element={<EditModule />} />
-        <Route path="/courses/:courseSlug/modules/:moduleSlug/add-content" element={<AddModuleContent />} />
-        <Route path="/courses/add-new" element={<AddCourseForm />} />
+        } />
 
+        <Route path="/courses/:slug/add-module" element={
+          <PrivateRoute>
+            <AddModuleForm />
+          </PrivateRoute>
+        } />
+        <Route path="/modules/:slug/edit" element={
+          <PrivateRoute>
+            <EditModule />
+          </PrivateRoute>
+        } />
+        <Route path="/courses/:courseSlug/modules/:moduleSlug/add-content" element={
+          <PrivateRoute>
+            <AddModuleContent />
+          </PrivateRoute>
+        } />
+        <Route path="/courses/add-new" element={
+          <PrivateRoute>
+            <AddCourseForm />
+          </PrivateRoute>
+        } />
+        <Route path="/module/:moduleId/assignment/:assignmentId/" element={
+          <PrivateRoute>
+            <AssignmentPanel />
+          </PrivateRoute>
+          }/>
+          <Route path="/module/:slug" element={
+          <PrivateRoute>
+            <ModuleDetails />
+          </PrivateRoute>
+          }/>
       </Routes>
     </Router>
   );
