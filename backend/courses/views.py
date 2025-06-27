@@ -3,7 +3,8 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework import status, permissions
 from django.shortcuts import get_object_or_404
-from .models import Module, Course, ModuleContent, Enrollment, ContentProgress, Certificate, Assignment, AssignmentSubmission
+from .models import Module, Course, ModuleContent, Enrollment, ContentProgress, Certificate, Assignment, AssignmentSubmission, Category, SubCategory, Tag
+from .serializers import TagSerializer, CategorySerializer, SubCategorySerializer
 from .serializers import ModuleSerializer, ModuleContentSerializer,CourseSerializer,PendingCertificateSerializer,  CertificateSerializer, DashboardSerializer, AssignmentSerializer, AssignmentSubmissionSerializer
 from .utils.certificate_generator import generate_certificate_pdf
 from django.utils import timezone
@@ -18,8 +19,44 @@ def user_is_enrolled(user, module_content):
     course = module_content.module.course
     return user in course.students_enrolled.all()
 
+
+# --- Tag List View ---
+@api_view(['GET'])
+def tag_list(request):
+    """
+    List all tags.
+    Endpoint: /api/courses/tags/
+    """
+    tags = Tag.objects.all()
+    serializer = TagSerializer(tags, many=True)
+    return Response(serializer.data)
+
+# --- Category List View ---
+@api_view(['GET'])
+def category_list(request):
+    """
+    List all categories.
+    Endpoint: /api/courses/categories/
+    """
+    categories = Category.objects.all()
+    serializer = CategorySerializer(categories, many=True)
+    return Response(serializer.data)
+
+# --- SubCategory List View (with optional filtering) ---
+@api_view(['GET'])
+def subcategory_list(request):
+    """
+    List all subcategories.
+    Optionally filter by category_slug: /api/courses/subcategories/?category_slug=my-category-slug
+    """
+    queryset = SubCategory.objects.all()
+    category_slug = request.query_params.get('category_slug', None)
+    if category_slug is not None:
+        queryset = queryset.filter(category__slug=category_slug)
+    serializer = SubCategorySerializer(queryset, many=True)
+    return Response(serializer.data)
+
 @api_view(['GET', 'POST'])
-@permission_classes([permissions.IsAuthenticatedOrReadOnly])
 def course_list_create(request):
     """
     Handles GET and POST requests for courses.
@@ -45,6 +82,22 @@ def course_list_create(request):
             serializer.save(author=request.user)
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+@api_view(['GET'])
+def subcategories_by_category(request, category_slug):
+    """
+    List subcategories for a specific category slug.
+    Endpoint: /api/courses/categories/{category_slug}/subcategories/
+    """
+    # Get the Category object based on the provided slug
+    category = get_object_or_404(Category, slug=category_slug)
+
+    # Filter SubCategory objects related to this category
+    subcategories = SubCategory.objects.filter(category=category)
+    serializer = SubCategorySerializer(subcategories, many=True)
+    return Response(serializer.data)
+
+
 
 @api_view(['GET', 'PUT', 'PATCH', 'DELETE'])
 @permission_classes([IsAuthenticated])

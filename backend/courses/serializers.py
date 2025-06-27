@@ -1,6 +1,29 @@
 from rest_framework import serializers
-from .models import Course, Module, ModuleContent, Enrollment, ContentProgress, Certificate, Assignment, AssignmentSubmission
+from .models import Course, Module, ModuleContent, Enrollment, ContentProgress, Certificate, Assignment, AssignmentSubmission, Category, SubCategory, Tag 
 from accounts.serializers import AuthorSerializer
+
+
+# --- Tag Serializer ---
+class TagSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Tag
+        fields = ['id', 'name'] # Frontend needs 'id' for multi-select value, 'name' for display
+
+# --- SubCategory Serializer ---
+class SubCategorySerializer(serializers.ModelSerializer):
+    # category is needed as a foreign key during creation, but for listing, we want its slug.
+    # The frontend form will send the category slug.
+    class Meta:
+        model = SubCategory
+        fields = ['slug', 'name', 'category'] # slug is primary key for frontend value
+        read_only_fields = ['slug'] # slug is auto-generated
+
+# --- Category Serializer ---
+class CategorySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Category
+        fields = ['slug', 'name'] # slug is primary key for frontend value
+        read_only_fields = ['slug'] # slug is auto-generated
 
 class ModuleContentSerializer(serializers.ModelSerializer):
     is_completed = serializers.SerializerMethodField()
@@ -38,6 +61,22 @@ class CourseSerializer(serializers.ModelSerializer):
     modules = ModuleSerializer(many=True, read_only=True)
     is_enrolled = serializers.SerializerMethodField()
     is_author = serializers.SerializerMethodField()
+    category = serializers.SlugRelatedField(
+        slug_field='slug',
+        queryset=Category.objects.all(),
+        required=True
+    )
+    subcategory = serializers.SlugRelatedField(
+        slug_field='slug',
+        queryset=SubCategory.objects.all(),
+        required=True
+    )
+    # For ManyToManyField, PrimaryKeyRelatedField (many=True) is common for accepting IDs
+    tags = serializers.PrimaryKeyRelatedField(
+        queryset=Tag.objects.all(),
+        many=True,
+        required=False
+    )
 
     class Meta:
         model = Course
@@ -45,8 +84,9 @@ class CourseSerializer(serializers.ModelSerializer):
             'slug', 'name', 'description', 'created_at', 'rating',
             'launch_date', 'is_published', 'thumbnail', 'level', 'duration',
             'author', 'category', 'subcategory', 'tags', 'students_enrolled', 'modules', 'is_enrolled', 'is_author',
+            'auto_certificate',
         ]
-    read_only_fields = ['created_at', 'slug', 'author']
+        read_only_fields = ['slug', 'created_at', 'author', 'rating', 'students_enrolled']
 
     def get_is_enrolled(self, obj):
         request = self.context.get('request')
@@ -61,7 +101,6 @@ class CourseSerializer(serializers.ModelSerializer):
         return False
 
     def create(self, validated_data):
-        # Automatically assign author from context
         request = self.context.get('request')
         if request and hasattr(request, 'user'):
             validated_data['author'] = request.user

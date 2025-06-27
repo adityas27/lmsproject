@@ -26,7 +26,7 @@ SECRET_KEY = 'django-insecure-m*%iz!8n@k_ttv!i57o*s6cynxf$7dqxgb&wgmge2)x)+y6#6(
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['192.168.0.241', 'localhost', '127.0.0.1'] # Set for local network IP and localhost
 
 
 # Application definition
@@ -147,7 +147,8 @@ SIMPLE_JWT = {
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:3000",
     "http://localhost:5173",  # React dev server
-]
+    "http://192.168.0.241:3000", # React dev server on local network
+    ]  
 
 MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media' 

@@ -17,6 +17,7 @@ import Profile from './components/Profile';
 import PendingCertificates from './components/PendingCert';
 import AssignmentPanel from './components/Courses/AssignmentPanel';
 import ModuleDetails from './components/Courses/ModuleDetails'; 
+import Footer from './components/Footer';
 function App() {
   return (
     <Router>
@@ -26,7 +27,7 @@ function App() {
         <Route path="/signup" element={<Signup />} />
         <Route path="/courses" element={<CourseList />} />
         <Route path="/courses/:slug" element={<CourseDetails />} />
-        <Route path="/dashboard" element={
+        <Route path="/" element={
           <PrivateRoute>
             <StudentDashboard />
           </PrivateRoute>
@@ -85,6 +86,7 @@ function App() {
           </PrivateRoute>
           }/>
       </Routes>
+      <Footer />
     </Router>
   );
 }

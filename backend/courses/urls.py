@@ -29,5 +29,11 @@ urlpatterns = [
     path('assignments/<int:assignment_id>/submit/', views.submit_assignment, name='assignment-submit'),
     path('assignments/<int:assignment_id>/submissions/', views.view_submissions, name='view-submissions'),
     path('submissions/<int:submission_id>/grade/', views.grade_submission, name='grade-submission'),
+    # Tags and Categories Extras
+    path('tags/', views.tag_list, name='tag-list'),
+    path('categories/', views.category_list, name='category-list'),
+    path('subcategories/', views.subcategory_list, name='subcategory-list'),
+    path('categories/<slug:category_slug>/subcategories/', views.subcategories_by_category, name='subcategories-by-category'),
+
 ]
 

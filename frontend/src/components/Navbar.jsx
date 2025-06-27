@@ -20,7 +20,7 @@ export default function Navbar() {
   }, [location]);
 
   const navLinks = [
-    { to: '/dashboard', label: 'Dashboard' },
+    { to: '/', label: 'Dashboard' },
     { to: '/courses', label: 'Courses' },
     { to: '/profile', label: 'Profile' }
   ];

@@ -43,6 +43,7 @@ class Course(models.Model):
     rating = models.PositiveSmallIntegerField(validators=[MinValueValidator(0), MaxValueValidator(5)], default=0)
     launch_date = models.DateField()
     is_published = models.BooleanField(default=False)
+    price = models.DecimalField(max_digits=10, decimal_places=2, default=0.00, help_text="Price of the course in INR")
     thumbnail = models.ImageField(upload_to='course_thumbnails/', null=True, blank=True)
     level = models.CharField(
         max_length=20,
