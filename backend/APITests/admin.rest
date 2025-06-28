@@ -1,0 +1,50 @@
+### Login
+POST http://127.0.0.1:8000/api/accounts/login/
+Content-Type: application/json
+
+{
+    "username": "adity",
+    "password": "123456"
+}
+
+### Get All Users (Visible only to superuser or semi-admin)
+GET http://localhost:8000/api/accounts/admin/users/
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzUxMzE2NjQzLCJpYXQiOjE3NTExNDM4NDMsImp0aSI6IjQxYjZmNWIxZTQ5MTQ1YmU4ODNhZGMyZGVhOTNmMWE4IiwidXNlcl9pZCI6M30.v_ildZWwnlp62rDq2Y_AmyvHQlCdSjmgxUi_vlhX9jU
+
+### Update is_semi_admin and is_banned for a user
+PUT http://localhost:8000/api/accounts/admin/users/3/update/
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzUxMzE2NjQzLCJpYXQiOjE3NTExNDM4NDMsImp0aSI6IjQxYjZmNWIxZTQ5MTQ1YmU4ODNhZGMyZGVhOTNmMWE4IiwidXNlcl9pZCI6M30.v_ildZWwnlp62rDq2Y_AmyvHQlCdSjmgxUi_vlhX9jU
+Content-Type: application/json
+
+{
+    "is_teacher": true,
+  "is_semi_admin": true,
+  "is_banned": false
+}
+
+### 📬 Submit Teacher Application (by user)
+POST http://localhost:8000/api/accounts/teacher-application/submit/
+Authorization: Bearer  eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzUxMzE2NjQzLCJpYXQiOjE3NTExNDM4NDMsImp0aSI6IjQxYjZmNWIxZTQ5MTQ1YmU4ODNhZGMyZGVhOTNmMWE4IiwidXNlcl9pZCI6M30.v_ildZWwnlp62rDq2Y_AmyvHQlCdSjmgxUi_vlhX9jU
+Content-Type: application/json
+
+{
+  "highest_education": "M.Sc. Physics",
+  "skills": "Quantum computing, teaching",
+  "expertise": "Quantum mechanics, Python, Qiskit",
+  "past_experience": "3 years teaching at XYZ college"
+}
+
+
+### 📄 List All Applications (semi-admin/superuser only)
+GET http://localhost:8000/api/accounts/teacher-application/
+Authorization: Bearer  eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzUxMzE2NjQzLCJpYXQiOjE3NTExNDM4NDMsImp0aSI6IjQxYjZmNWIxZTQ5MTQ1YmU4ODNhZGMyZGVhOTNmMWE4IiwidXNlcl9pZCI6M30.v_ildZWwnlp62rDq2Y_AmyvHQlCdSjmgxUi_vlhX9jU
+
+
+### ✅ Update Application Status
+PATCH http://localhost:8000/api/accounts/teacher-application/1/status/
+Authorization: Bearer  eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzUxMzE2NjQzLCJpYXQiOjE3NTExNDM4NDMsImp0aSI6IjQxYjZmNWIxZTQ5MTQ1YmU4ODNhZGMyZGVhOTNmMWE4IiwidXNlcl9pZCI6M30.v_ildZWwnlp62rDq2Y_AmyvHQlCdSjmgxUi_vlhX9jU
+Content-Type: application/json
+
+{
+  "status": "approved"
+}

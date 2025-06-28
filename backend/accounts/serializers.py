@@ -1,6 +1,6 @@
 from rest_framework import serializers
 from django.contrib.auth.password_validation import validate_password
-from .models import CustomUser
+from .models import CustomUser, TeacherApplication
 from django.contrib.auth import get_user_model
 
 User = get_user_model()
@@ -50,3 +50,21 @@ class Profile(serializers.ModelSerializer):
     class Meta:
         model = CustomUser
         fields = ['first_name', 'last_name', 'username','email', 'profile_image', 'banner_image', 'bio', 'phone_number', 'date_of_birth', 'joined_at', 'is_verified', 'is_teacher'  ]
+
+class UserAdminSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = CustomUser
+        fields = ['id', 'username', 'email', 'is_teacher', 'is_semi_admin', 'is_banned']
+        read_only_fields = ['id', 'username', 'email']
+
+
+class TeacherApplicationSerializer(serializers.ModelSerializer):
+    user = serializers.StringRelatedField(read_only=True)
+
+    class Meta:
+        model = TeacherApplication
+        fields = [
+            'id', 'user', 'highest_education', 'skills',
+            'expertise', 'past_experience', 'status', 'submitted_at'
+        ]
+        read_only_fields = ['id', 'user', 'status', 'submitted_at']
