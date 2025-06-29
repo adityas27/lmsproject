@@ -121,8 +121,23 @@ class ModuleContent(models.Model):
 
 class Enrollment(models.Model):
     student = models.ForeignKey(User, on_delete=models.CASCADE, related_name='enrollments')
-    course = models.ForeignKey('Course', on_delete=models.CASCADE, related_name='enrollments')
+    course = models.ForeignKey(Course, on_delete=models.CASCADE, related_name='enrollments')
     enrolled_at = models.DateTimeField(auto_now_add=True)
+    # Stripe Integration Fields : For future use, might need to update this model then
+    stripe_session_id = models.CharField(max_length=255, blank=True, null=True)
+    payment_status = models.CharField(max_length=20, choices=[
+        ('pending', 'Pending'),
+        ('paid', 'Paid'),
+        ('failed', 'Failed')
+    ], default='pending')
+    payment_timestamp = models.DateTimeField(blank=True, null=True)
+    access_granted = models.BooleanField(default=False)
+
+    class Meta:
+        unique_together = ('user', 'course')
+
+    def __str__(self):
+        return f"{self.user.username} → {self.course.title}"
 
     class Meta:
         unique_together = ('student', 'course')

@@ -22,7 +22,7 @@ Content-Type: application/json
   "is_banned": false
 }
 
-### 📬 Submit Teacher Application (by user)
+### Submit Teacher Application (by user)
 POST http://localhost:8000/api/accounts/teacher-application/submit/
 Authorization: Bearer  eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzUxMzE2NjQzLCJpYXQiOjE3NTExNDM4NDMsImp0aSI6IjQxYjZmNWIxZTQ5MTQ1YmU4ODNhZGMyZGVhOTNmMWE4IiwidXNlcl9pZCI6M30.v_ildZWwnlp62rDq2Y_AmyvHQlCdSjmgxUi_vlhX9jU
 Content-Type: application/json
@@ -35,12 +35,12 @@ Content-Type: application/json
 }
 
 
-### 📄 List All Applications (semi-admin/superuser only)
+### List All Applications (semi-admin/superuser only)
 GET http://localhost:8000/api/accounts/teacher-application/
 Authorization: Bearer  eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzUxMzE2NjQzLCJpYXQiOjE3NTExNDM4NDMsImp0aSI6IjQxYjZmNWIxZTQ5MTQ1YmU4ODNhZGMyZGVhOTNmMWE4IiwidXNlcl9pZCI6M30.v_ildZWwnlp62rDq2Y_AmyvHQlCdSjmgxUi_vlhX9jU
 
 
-### ✅ Update Application Status
+### Update Application Status
 PATCH http://localhost:8000/api/accounts/teacher-application/1/status/
 Authorization: Bearer  eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzUxMzE2NjQzLCJpYXQiOjE3NTExNDM4NDMsImp0aSI6IjQxYjZmNWIxZTQ5MTQ1YmU4ODNhZGMyZGVhOTNmMWE4IiwidXNlcl9pZCI6M30.v_ildZWwnlp62rDq2Y_AmyvHQlCdSjmgxUi_vlhX9jU
 Content-Type: application/json
@@ -48,3 +48,11 @@ Content-Type: application/json
 {
   "status": "approved"
 }
+### Get All Students (semi-admin/superuser)
+GET http://localhost:8000/api/accounts/admin/students/
+Authorization: Bearer  eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzUxMzE2NjQzLCJpYXQiOjE3NTExNDM4NDMsImp0aSI6IjQxYjZmNWIxZTQ5MTQ1YmU4ODNhZGMyZGVhOTNmMWE4IiwidXNlcl9pZCI6M30.v_ildZWwnlp62rDq2Y_AmyvHQlCdSjmgxUi_vlhX9jU
+
+
+### Toggle Ban on Student (semi-admin/superuser)
+PATCH http://localhost:8000/api/accounts/admin/students/1/ban-toggle/
+Authorization: Bearer  eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzUxMzE2NjQzLCJpYXQiOjE3NTExNDM4NDMsImp0aSI6IjQxYjZmNWIxZTQ5MTQ1YmU4ODNhZGMyZGVhOTNmMWE4IiwidXNlcl9pZCI6M30.v_ildZWwnlp62rDq2Y_AmyvHQlCdSjmgxUi_vlhX9jU

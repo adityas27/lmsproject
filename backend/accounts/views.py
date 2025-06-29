@@ -1,6 +1,6 @@
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.views import APIView
-from .serializers import UserSerializer, Profile, UserUpdateSerializer, UserAdminSerializer, TeacherApplicationSerializer
+from .serializers import UserSerializer, Profile, UserUpdateSerializer, UserAdminSerializer, TeacherApplicationSerializer, StudentInfoSerializer
 from rest_framework import status
 from rest_framework.decorators import api_view, permission_classes, parser_classes
 from rest_framework.response import Response
@@ -95,3 +95,22 @@ def update_application_status(request, app_id):
     application.save()
     serializer = TeacherApplicationSerializer(application)
     return Response(serializer.data)
+
+@api_view(['GET'])
+@permission_classes([IsAdminOrSemiAdmin])
+def list_students(request):
+    students = CustomUser.objects.filter(is_teacher=False)
+    serializer = StudentInfoSerializer(students, many=True)
+    return Response(serializer.data)
+
+@api_view(['PATCH'])
+@permission_classes([IsAdminOrSemiAdmin])
+def toggle_ban_user(request, user_id):
+    user = get_object_or_404(CustomUser, id=user_id)
+    if user.is_superuser or user.is_semi_admin:
+        return Response({'detail': "Cannot ban an admin user."}, status=status.HTTP_403_FORBIDDEN)
+    
+    user.is_banned = not user.is_banned
+    user.save()
+    return Response({'id': user.id, 'is_banned': user.is_banned})
+
