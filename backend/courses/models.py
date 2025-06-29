@@ -56,6 +56,8 @@ class Course(models.Model):
     tags = models.ManyToManyField('Tag', blank=True)
     students_enrolled = models.ManyToManyField(User, through='Enrollment', related_name='courses_enrolled', blank=True)
     auto_certificate = models.BooleanField(default=True)
+    is_visible = models.BooleanField(default=True)
+    
     def save(self, *args, **kwargs):
         if not self.slug:
             base_slug = slugify(self.name)

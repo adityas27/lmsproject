@@ -56,3 +56,11 @@ Authorization: Bearer  eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoi
 ### Toggle Ban on Student (semi-admin/superuser)
 PATCH http://localhost:8000/api/accounts/admin/students/1/ban-toggle/
 Authorization: Bearer  eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzUxMzE2NjQzLCJpYXQiOjE3NTExNDM4NDMsImp0aSI6IjQxYjZmNWIxZTQ5MTQ1YmU4ODNhZGMyZGVhOTNmMWE4IiwidXNlcl9pZCI6M30.v_ildZWwnlp62rDq2Y_AmyvHQlCdSjmgxUi_vlhX9jU
+
+### Get All Courses (with visibility)
+GET http://localhost:8000/api/admin/courses/
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzUxMzE2NjQzLCJpYXQiOjE3NTExNDM4NDMsImp0aSI6IjQxYjZmNWIxZTQ5MTQ1YmU4ODNhZGMyZGVhOTNmMWE4IiwidXNlcl9pZCI6M30.v_ildZWwnlp62rDq2Y_AmyvHQlCdSjmgxUi_vlhX9jU
+
+### Toggle Course Visibility (semi-admin/superuser)
+PATCH http://localhost:8000/api/admin/courses/django-for-beginners-0699d8/toggle-visibility/
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzUxMzE2NjQzLCJpYXQiOjE3NTExNDM4NDMsImp0aSI6IjQxYjZmNWIxZTQ5MTQ1YmU4ODNhZGMyZGVhOTNmMWE4IiwidXNlcl9pZCI6M30.v_ildZWwnlp62rDq2Y_AmyvHQlCdSjmgxUi_vlhX9jU
