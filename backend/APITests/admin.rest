@@ -3,8 +3,8 @@ POST http://127.0.0.1:8000/api/accounts/login/
 Content-Type: application/json
 
 {
-    "username": "adity",
-    "password": "123456"
+    "username": "janedoe",
+    "password": "StrongPass456!"
 }
 
 ### Get All Users (Visible only to superuser or semi-admin)
@@ -23,8 +23,8 @@ Content-Type: application/json
 }
 
 ### Submit Teacher Application (by user)
-POST http://localhost:8000/api/accounts/teacher-application/submit/
-Authorization: Bearer  eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzUxMzE2NjQzLCJpYXQiOjE3NTExNDM4NDMsImp0aSI6IjQxYjZmNWIxZTQ5MTQ1YmU4ODNhZGMyZGVhOTNmMWE4IiwidXNlcl9pZCI6M30.v_ildZWwnlp62rDq2Y_AmyvHQlCdSjmgxUi_vlhX9jU
+POST http://localhost:8000/api/admin/teacher-application/submit/
+Authorization: Bearer  eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzUxNDc0NDIwLCJpYXQiOjE3NTEzMDE2MjAsImp0aSI6Ijc5M2NjNDYwMDQ5MTQ1ODc4YmJmMTYzMWEzZGZiN2JkIiwidXNlcl9pZCI6Mn0._31dh8m5WEL44h-aAYwY4g0UQKpQJFnHCe3K9De8xQw
 Content-Type: application/json
 
 {
@@ -36,7 +36,7 @@ Content-Type: application/json
 
 
 ### List All Applications (semi-admin/superuser only)
-GET http://localhost:8000/api/accounts/teacher-application/
+GET http://localhost:8000/api/admin/teacher-application/
 Authorization: Bearer  eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzUxMzE2NjQzLCJpYXQiOjE3NTExNDM4NDMsImp0aSI6IjQxYjZmNWIxZTQ5MTQ1YmU4ODNhZGMyZGVhOTNmMWE4IiwidXNlcl9pZCI6M30.v_ildZWwnlp62rDq2Y_AmyvHQlCdSjmgxUi_vlhX9jU
 
 

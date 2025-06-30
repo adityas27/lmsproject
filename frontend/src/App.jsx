@@ -18,6 +18,7 @@ import PendingCertificates from './components/PendingCert';
 import AssignmentPanel from './components/Courses/AssignmentPanel';
 import ModuleDetails from './components/Courses/ModuleDetails'; 
 import Footer from './components/Footer';
+import AdminPanelTabs from './components/Admin/AdminPanel';
 function App() {
   return (
     <Router>
@@ -83,6 +84,11 @@ function App() {
           <Route path="/module/:slug" element={
           <PrivateRoute>
             <ModuleDetails />
+          </PrivateRoute>
+          }/>
+          <Route path="/admin" element={
+          <PrivateRoute>
+            <AdminPanelTabs />
           </PrivateRoute>
           }/>
       </Routes>
