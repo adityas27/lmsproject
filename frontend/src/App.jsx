@@ -19,6 +19,7 @@ import AssignmentPanel from './components/Courses/AssignmentPanel';
 import ModuleDetails from './components/Courses/ModuleDetails'; 
 import Footer from './components/Footer';
 import AdminPanelTabs from './components/Admin/AdminPanel';
+import SearchCourse from './components/Courses/Search';
 function App() {
   return (
     <Router>
@@ -28,6 +29,7 @@ function App() {
         <Route path="/signup" element={<Signup />} />
         <Route path="/courses" element={<CourseList />} />
         <Route path="/courses/:slug" element={<CourseDetails />} />
+        <Route path="/search" element={<SearchCourse />} />
         <Route path="/" element={
           <PrivateRoute>
             <StudentDashboard />

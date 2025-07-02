@@ -8,6 +8,7 @@ from .serializers import TagSerializer, CategorySerializer, SubCategorySerialize
 from .serializers import ModuleSerializer, ModuleContentSerializer,CourseSerializer,PendingCertificateSerializer,  CertificateSerializer, DashboardSerializer, AssignmentSerializer, AssignmentSubmissionSerializer
 from .utils.certificate_generator import generate_certificate_pdf
 from django.utils import timezone
+from django.db.models import Q
 
 # Helper function to check if the user is the author of the course and if they are enrolled in the course
 def user_is_author(user, module_content):
@@ -71,12 +72,56 @@ def course_list_create(request):
     """
     if request.method == 'GET':
         courses = Course.objects.all()
+
+        # Filter for visibility based on auth
         if not request.user.is_authenticated:
-            courses = courses.filter(is_published=True)
-        serializer = CourseSerializer(courses, many=True)
+            courses = courses.filter(is_visible=True)
+
+        # Handle search
+        search = request.query_params.get('search')
+        if search:
+            courses = courses.filter(
+                Q(name__icontains=search) |
+                Q(description__icontains=search) |
+                Q(author__username__icontains=search)
+            )
+
+        # Filter by fields
+        level = request.query_params.get('level')
+        category = request.query_params.get('category')
+        subcategory = request.query_params.get('subcategory')
+        is_published = request.query_params.get('is_published')
+        is_visible = request.query_params.get('is_visible')
+        price_min = request.query_params.get('price_min')
+        price_max = request.query_params.get('price_max')
+
+        if level:
+            courses = courses.filter(level__iexact=level)
+        if category:
+            courses = courses.filter(category__slug=category)
+        if subcategory:
+            courses = courses.filter(subcategory__slug=subcategory)
+        if is_published is not None:
+            courses = courses.filter(is_published=is_published.lower() == 'true')
+        if is_visible is not None:
+            courses = courses.filter(is_visible=is_visible.lower() == 'true')
+        if price_min:
+            courses = courses.filter(price__gte=price_min)
+        if price_max:
+            courses = courses.filter(price__lte=price_max)
+
+        #  Ordering
+        ordering = request.query_params.get('ordering')  # e.g., -price, created_at
+        if ordering:
+            courses = courses.order_by(ordering)
+
+        serializer = CourseSerializer(courses, many=True, context={'request': request})
         return Response(serializer.data)
 
     elif request.method == 'POST':
+        if not request.user.is_authenticated:
+            return Response({'detail': 'Authentication required to create a course.'}, status=status.HTTP_401_UNAUTHORIZED)
+
         serializer = CourseSerializer(data=request.data, context={'request': request})
         if serializer.is_valid():
             serializer.save(author=request.user)

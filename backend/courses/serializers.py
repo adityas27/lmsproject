@@ -84,7 +84,7 @@ class CourseSerializer(serializers.ModelSerializer):
             'slug', 'name', 'description', 'created_at', 'rating',
             'launch_date', 'is_published', 'thumbnail', 'level', 'duration',
             'author', 'category', 'subcategory', 'tags', 'students_enrolled', 'modules', 'is_enrolled', 'is_author',
-            'auto_certificate',
+            'auto_certificate', 'price'
         ]
         read_only_fields = ['slug', 'created_at', 'author', 'rating', 'students_enrolled']
 
