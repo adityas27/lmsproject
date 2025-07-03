@@ -21,6 +21,8 @@ import Footer from './components/Footer';
 import AdminPanelTabs from './components/Admin/AdminPanel';
 import SearchCourse from './components/Courses/Search';
 import ApplyTeacher from './components/Admin/ApplyTeacher'
+import NotFoundPage from './components/404';
+
 function App() {
   return (
     <Router>
@@ -103,7 +105,9 @@ function App() {
             <AdminPanelTabs />
           </PrivateRoute>
         } />
+        <Route path="*" element={<NotFoundPage />} /> {/* This catches all undefined routes */}
       </Routes>
+      
       <Footer />
     </Router>
   );

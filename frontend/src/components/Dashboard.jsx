@@ -11,7 +11,7 @@ const StudentDashboard = () => {
   const [greeting, setGreeting] = useState('');
   
   // *** RESTORED ORIGINAL BASE_URL AND URL USAGE ***
-  const BASE_URL = 'http://127:0.0.1:8000'; // Original BASE_URL with colon
+  const BASE_URL = 'http://127.0.0.1:8000'; // Original BASE_URL with colon
 
   useEffect(() => {
     const getGreeting = () => {
