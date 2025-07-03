@@ -205,3 +205,19 @@ class AssignmentSubmission(models.Model):
 
     class Meta:
         unique_together = ('assignment', 'student')
+    
+class CourseFeedback(models.Model):
+    RATING_CHOICES = [(i, i) for i in range(1, 6)]
+
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    course = models.ForeignKey(Course, on_delete=models.CASCADE, related_name='feedbacks')
+    rating = models.IntegerField(choices=RATING_CHOICES)
+    comment = models.TextField(blank=True)
+    submitted_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        unique_together = ['user', 'course']
+        ordering = ['-submitted_at']
+
+    def __str__(self):
+        return f"{self.user.username} rated {self.course.name}: {self.rating}/5"

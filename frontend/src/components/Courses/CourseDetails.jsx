@@ -3,6 +3,7 @@ import { useParams, Link } from 'react-router-dom';
 import axios from 'axios';
 import ModulesList from './Modules';
 import ProgressBar from '../ProgressBar';
+import CourseFeedback from './CourseFeedback';
 // Import necessary Heroicons
 import {
   ArrowLeftIcon,
@@ -349,6 +350,7 @@ const CourseDetailPage = () => {
         )}
 
       </div>
+      <CourseFeedback courseSlug={course.slug} />
     </div>
   );
 };

@@ -3,13 +3,12 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework import status, permissions
 from django.shortcuts import get_object_or_404
-from .models import Module, Course, ModuleContent, Enrollment, ContentProgress, Certificate, Assignment, AssignmentSubmission, Category, SubCategory, Tag
-from .serializers import TagSerializer, CategorySerializer, SubCategorySerializer
+from .models import Module, Course, ModuleContent, Enrollment, ContentProgress, Certificate, Assignment, AssignmentSubmission, Category, SubCategory, Tag, CourseFeedback
+from .serializers import TagSerializer, CategorySerializer, SubCategorySerializer, CourseFeedbackSerializer
 from .serializers import ModuleSerializer, ModuleContentSerializer,CourseSerializer,PendingCertificateSerializer,  CertificateSerializer, DashboardSerializer, AssignmentSerializer, AssignmentSubmissionSerializer
 from .utils.certificate_generator import generate_certificate_pdf
 from django.utils import timezone
 from django.db.models import Q
-
 # Helper function to check if the user is the author of the course and if they are enrolled in the course
 def user_is_author(user, module_content):
     # Check if user is the author of the course the module_content belongs to
@@ -567,3 +566,34 @@ def grade_submission(request, submission_id):
         serializer.save()
         return Response(serializer.data)
     return Response(serializer.errors, status=400)
+
+@api_view(['POST', 'PUT'])
+@permission_classes([IsAuthenticated])
+def submit_feedback(request, slug):
+    try:
+        course = Course.objects.get(slug=slug)
+    except Course.DoesNotExist:
+        return Response({"detail": "Course not found"}, status=404)
+
+    try:
+        feedback = CourseFeedback.objects.get(user=request.user, course=course)
+        serializer = CourseFeedbackSerializer(feedback, data=request.data, partial=True)
+    except CourseFeedback.DoesNotExist:
+        serializer = CourseFeedbackSerializer(data=request.data)
+
+    if serializer.is_valid():
+        serializer.save(user=request.user, course=course)
+        return Response(serializer.data)
+    return Response(serializer.errors, status=400)
+
+
+@api_view(['GET'])
+def course_feedback_list(request, slug):
+    try:
+        course = Course.objects.get(slug=slug)
+    except Course.DoesNotExist:
+        return Response({"detail": "Course not found"}, status=404)
+
+    feedbacks = course.feedbacks.all()
+    serializer = CourseFeedbackSerializer(feedbacks, many=True)
+    return Response(serializer.data)

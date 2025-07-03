@@ -34,6 +34,9 @@ urlpatterns = [
     path('categories/', views.category_list, name='category-list'),
     path('subcategories/', views.subcategory_list, name='subcategory-list'),
     path('categories/<slug:category_slug>/subcategories/', views.subcategories_by_category, name='subcategories-by-category'),
+    # Ratings 
+    path('<slug:slug>/feedback/', views.submit_feedback, name='course-feedback'),
+    path('<slug:slug>/feedback/list/', views.course_feedback_list, name='course-feedback-list'),
 
 ]
 

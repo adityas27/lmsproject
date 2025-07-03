@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Course, Module, ModuleContent, Enrollment, ContentProgress, Certificate, Assignment, AssignmentSubmission, Category, SubCategory, Tag 
+from .models import Course, Module, CourseFeedback, ModuleContent, Enrollment, ContentProgress, Certificate, Assignment, AssignmentSubmission, Category, SubCategory, Tag 
 from accounts.serializers import AuthorSerializer
 
 
@@ -213,3 +213,11 @@ class AssignmentSubmissionSerializer(serializers.ModelSerializer):
         if request and hasattr(request, 'user'):
             return obj.student == request.user
         return False
+    
+class CourseFeedbackSerializer(serializers.ModelSerializer):
+    user = serializers.StringRelatedField(read_only=True)
+
+    class Meta:
+        model = CourseFeedback
+        fields = ['id', 'user', 'course', 'rating', 'comment', 'submitted_at']
+        read_only_fields = ['id', 'user', 'submitted_at']
