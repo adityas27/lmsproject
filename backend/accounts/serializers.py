@@ -49,5 +49,5 @@ class Profile(serializers.ModelSerializer):
 
     class Meta:
         model = CustomUser
-        fields = ['first_name', 'last_name', 'username','email', 'profile_image', 'banner_image', 'bio', 'phone_number', 'date_of_birth', 'joined_at', 'is_verified', 'is_teacher'  ]
+        fields = ['first_name', 'last_name', 'username','email', 'profile_image', 'banner_image', 'bio', 'phone_number', 'date_of_birth', 'joined_at', 'is_verified', 'is_teacher', 'is_semi_admin'  ]
 

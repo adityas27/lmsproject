@@ -16,10 +16,11 @@ import AddCourseForm from './components/Courses/AddCourse';
 import Profile from './components/Profile';
 import PendingCertificates from './components/PendingCert';
 import AssignmentPanel from './components/Courses/AssignmentPanel';
-import ModuleDetails from './components/Courses/ModuleDetails'; 
+import ModuleDetails from './components/Courses/ModuleDetails';
 import Footer from './components/Footer';
 import AdminPanelTabs from './components/Admin/AdminPanel';
 import SearchCourse from './components/Courses/Search';
+import ApplyTeacher from './components/Admin/ApplyTeacher'
 function App() {
   return (
     <Router>
@@ -27,10 +28,19 @@ function App() {
       <Routes>
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<Signup />} />
-        <Route path="/courses" element={<CourseList />} />
-        <Route path="/courses/:slug" element={<CourseDetails />} />
+        <Route path="" element={<CourseList />} />
+        <Route path="/apply/teacher" element={
+          <PrivateRoute>
+            <ApplyTeacher />
+          </PrivateRoute>
+        } />
+        <Route path="/courses/:slug" element={
+          <PrivateRoute>
+            <CourseDetails />
+          </PrivateRoute>
+        } />
         <Route path="/search" element={<SearchCourse />} />
-        <Route path="/" element={
+        <Route path="/dashboard" element={
           <PrivateRoute>
             <StudentDashboard />
           </PrivateRoute>
@@ -82,17 +92,17 @@ function App() {
           <PrivateRoute>
             <AssignmentPanel />
           </PrivateRoute>
-          }/>
-          <Route path="/module/:slug" element={
+        } />
+        <Route path="/module/:slug" element={
           <PrivateRoute>
             <ModuleDetails />
           </PrivateRoute>
-          }/>
-          <Route path="/admin" element={
+        } />
+        <Route path="/admin" element={
           <PrivateRoute>
             <AdminPanelTabs />
           </PrivateRoute>
-          }/>
+        } />
       </Routes>
       <Footer />
     </Router>

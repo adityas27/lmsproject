@@ -60,6 +60,7 @@ def list_teacher_applications(request):
 @permission_classes([IsAdminOrSemiAdmin])
 def update_application_status(request, app_id):
     application = get_object_or_404(TeacherApplication, id=app_id)
+    user = get_object_or_404(CustomUser, id=application.user.id)
     new_status = request.data.get('status')
 
     if new_status not in ['approved', 'rejected', 'on_hold', 'pending']:
@@ -67,6 +68,8 @@ def update_application_status(request, app_id):
 
     application.status = new_status
     application.save()
+    user.is_teacher = True
+    user.save()
     serializer = TeacherApplicationSerializer(application)
     return Response(serializer.data)
 

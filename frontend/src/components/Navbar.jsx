@@ -20,8 +20,8 @@ export default function Navbar() {
   }, [location]);
 
   const navLinks = [
-    { to: '/', label: 'Dashboard' },
-    { to: '/courses', label: 'Courses' },
+    { to: '/', label: 'Courses' },
+    { to: '/dashboard', label: 'Dashboard' },
     { to: '/profile', label: 'Profile' }
   ];
 

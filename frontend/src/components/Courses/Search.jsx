@@ -13,6 +13,7 @@ import {
   ExclamationCircleIcon, // Error icon
   FaceFrownIcon,         // No courses found icon
 } from '@heroicons/react/24/outline';
+import { Link } from 'react-router-dom';
 
 const BASE_URL = 'http://127.0.0.1:8000'; // Define your base URL
 
@@ -191,12 +192,14 @@ const CourseSearchFilter = () => {
             <p className="text-sm mt-2">Try adjusting your filters.</p>
           </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="flex gap-6 justify-space-between">
             {courses.map((course) => (
+             
               <div
                 key={course.slug || course.id}
-                className="bg-white dark:bg-slate-800 p-5 rounded-xl shadow-md border border-gray-100 dark:border-slate-700 hover:shadow-lg transition-all duration-200 ease-in-out transform hover:-translate-y-1"
+                className="bg-white dark:bg-slate-800 p-5 w-1/3 rounded-xl shadow-md border border-gray-100 dark:border-slate-700 hover:shadow-lg transition-all duration-200 ease-in-out transform hover:-translate-y-1"
               >
+                 <Link to={`/courses/${course.slug}`} key={course.slug}>
                 <h3 className="text-xl font-semibold mb-2 text-gray-900 dark:text-white">
                   {course.name}
                 </h3>
@@ -232,6 +235,8 @@ const CourseSearchFilter = () => {
                     {course.price === 0 ? 'Free' : course.price}
                   </p>
                 </div>
+                
+              </Link>
               </div>
             ))}
           </div>

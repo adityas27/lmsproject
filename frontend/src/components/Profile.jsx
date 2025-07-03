@@ -14,7 +14,8 @@ import {
   UserGroupIcon,  // Become a Teacher icon
   PlusCircleIcon, // Create New Course icon
   CubeTransparentIcon, // Loading icon
-  InformationCircleIcon // Error icon
+  InformationCircleIcon, // Error icon
+  AdjustmentsVerticalIcon //Admin icon
 } from '@heroicons/react/24/outline'; // Using outline for most icons
 
 
@@ -198,6 +199,14 @@ const ProfileCard = () => {
               <button className="inline-flex items-center px-6 py-3 bg-green-600 text-white rounded-xl shadow-lg hover:bg-green-700 transition duration-300 ease-in-out transform hover:-translate-y-1 hover:scale-105 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-opacity-50">
                 <PlusCircleIcon className="h-5 w-5 mr-2" />
                 Create New Course
+              </button>
+            </Link>
+          )}
+          {user.is_semi_admin && (
+            <Link to="/admin">
+              <button className="inline-flex items-center px-6 py-3 bg-green-600 text-white rounded-xl shadow-lg hover:bg-green-700 transition duration-300 ease-in-out transform hover:-translate-y-1 hover:scale-105 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-opacity-50">
+                <AdjustmentsVerticalIcon className="h-5 w-5 mr-2" />
+                Admin Panel
               </button>
             </Link>
           )}

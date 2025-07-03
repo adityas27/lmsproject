@@ -1,13 +1,14 @@
 import React, { useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
-import { BookOpenIcon, InformationCircleIcon } from '@heroicons/react/24/outline';
+
+import { BookOpenIcon, InformationCircleIcon, MagnifyingGlassIcon } from '@heroicons/react/24/outline';
 
 const Courselist = () => {
   const [courses, setCourses] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-
+  const navigate = useNavigate();
   const coursesApiUrl = 'http://127.0.0.1:8000/api/courses/courses/'; 
 
   const fetchCourses = async () => {
@@ -29,7 +30,10 @@ const Courselist = () => {
   useEffect(() => {
     fetchCourses();
   }, []);
-
+  // Handle click on the search bar
+  const handleSearchBarClick = () => {
+    navigate('/search'); // Navigate directly to the search page
+  };
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-900"> {/* Consistent with CourseDetailPage bg */}
@@ -65,17 +69,29 @@ const Courselist = () => {
             Our Course Catalog
           </h1>
         </div>
-
+      {/* Search Bar acting as a button */}
+        <div
+          onClick={handleSearchBarClick} // Click handler for navigation
+          className="relative flex items-center bg-white dark:bg-gray-800 rounded-full shadow-lg dark:shadow-xl border border-gray-100 dark:border-gray-700 overflow-hidden px-4 py-2
+                     cursor-pointer hover:shadow-xl transition-shadow duration-200 ease-in-out" // Added cursor and hover effects
+        >
+          <MagnifyingGlassIcon className="h-6 w-6 text-gray-500 dark:text-gray-400 mr-3" />
+          {/* Input is now read-only and serves as a visual placeholder */}
+          <input
+            type="text"
+            placeholder="Search all courses..."
+            readOnly // Make the input not editable
+            className="flex-grow bg-transparent text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none text-lg py-1
+                       cursor-pointer" // Keep cursor-pointer on input too
+          />
+          {/* Removed the explicit search button */}
+        </div>
         {/* Course Grid - Now a Flexbox with wrapping! */}
         {courses.length > 0 ? (
           <div className="flex flex-wrap gap-6 justify-center"> {/* Changed to flex, flex-wrap, added gap, and justify-center */}
             {courses.map(course => (
               <div
                 key={course.id}
-                // Responsive flex-basis to mimic grid columns:
-                // basis-full: 100% width on small screens
-                // sm:basis-[calc(50%-12px)]: ~50% width on small-medium screens (accounting for gap-6 which is 24px, so 12px per side)
-                // lg:basis-[calc(33.33%-16px)]: ~33.33% width on large screens (accounting for 2 gaps on 3 items, so ~16px per item)
                 className="flex-shrink-0 flex-grow-0
                            sm:basis-[calc(50%-0.75rem)] lg:basis-[calc(33.33%-1rem)]
                            bg-white dark:bg-gray-800 rounded-2xl shadow-lg dark:shadow-xl
@@ -85,7 +101,7 @@ const Courselist = () => {
                 {/* Course Image Placeholder */}
                 <div className="relative w-full h-64 bg-gray-200 dark:bg-gray-700 flex items-center justify-center overflow-hidden">
                   <img
-                    src={course.thumbnail_url || `https://placehold.co/600x400/E0F2F7/264653?text=Course+Thumbnail`} 
+                    src={course.thumbnail || `https://placehold.co/600x400/E0F2F7/264653?text=Course+Thumbnail`} 
                     alt={`Thumbnail for ${course.name}`}
                     className="w-full h-full object-cover transition-transform duration-300 hover:scale-105"
                     onError={(e) => { e.target.onerror = null; e.target.src = 'https://placehold.co/600x400/E0F2F7/264653?text=Course+Thumbnail'; }}
