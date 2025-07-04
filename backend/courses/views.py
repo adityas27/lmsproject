@@ -580,9 +580,15 @@ def submit_feedback(request, slug):
         serializer = CourseFeedbackSerializer(feedback, data=request.data, partial=True)
     except CourseFeedback.DoesNotExist:
         serializer = CourseFeedbackSerializer(data=request.data)
+    print(serializer)
 
     if serializer.is_valid():
         serializer.save(user=request.user, course=course)
+        # Update course rating in Course table
+        feedbacks = CourseFeedback.objects.filter(course=course)
+        avg_rating = round(sum(f.rating for f in feedbacks) / feedbacks.count(), 1)
+        course.rating = avg_rating
+        course.save()
         return Response(serializer.data)
     return Response(serializer.errors, status=400)
 
